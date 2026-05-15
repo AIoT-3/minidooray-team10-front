@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <title>회원가입</title>
+
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet"/>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+
+<body>
+
+<video class="bg-video" autoplay muted loop>
+    <source th:src="@{/assets/mp4/bg.mp4}" type="video/mp4"/>
+</video>
+
+<div class="masthead">
+    <div class="masthead-content text-white">
+        <h1 class="fst-italic lh-1 mb-2">MiniDooray</h1>
+        <h1 class="fst-italic lh-1 mb-5">SignUp</h1>
+
+        <form th:action="@{/signup}" th:object="${signUpRequest}" method="post">
+
+            <div class="row input-group-newsletter">
+                <div class="col">
+                    <input class="form-control"
+                           th:field="*{email}"
+                           placeholder="Email"/>
+                    <div class="text-muted mt-2"
+                         th:errors="*{email}"></div>
+                </div>
+            </div>
+
+            <div class="row input-group-newsletter mt-3">
+                <div class="col">
+                    <input class="form-control"
+                           type="password"
+                           th:field="*{password}"
+                           placeholder="Password"/>
+                    <div class="text-muted mt-2"
+                         th:errors="*{password}"></div>
+                </div>
+            </div>
+
+            <div class="row input-group-newsletter mt-3">
+                <div class="col">
+                    <input class="form-control"
+                           th:field="*{name}"
+                           placeholder="Name"/>
+                    <div class="text-muted mt-2"
+                         th:errors="*{name}"></div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <button class="btn btn-primary" type="submit">
+                    SignUp
+                </button>
+            </div>
+
+            <div class="row mt-4">
+                <a th:href="@{/login}" class="btn btn-light">
+                    Login
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="social-icons">
+    <div class="d-flex flex-row flex-lg-column justify-content-center align-items-center h-100 mt-3 mt-lg-0">
+        <a class="btn btn-dark m-3" href="https://github.com/AIoT-3/minidooray-team10-gateway"><i class="fab fa-github"></i></a>
+        <a class="btn btn-dark m-3" href="#"><i class="fab fa-google"></i></a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:src="@{/js/scripts.js}"></script>
+
+</body>
+</html>
