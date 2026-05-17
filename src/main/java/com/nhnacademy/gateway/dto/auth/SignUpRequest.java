@@ -18,8 +18,8 @@ public class SignUpRequest {
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.", groups = NotBlankGroup.class)
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,20}$",
-            message = "8자 이상 20자 이하, 특수문자 포함",
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,20}$",
+            message = "8자 이상 20자 이하, 소문자/특수문자 포함",
             groups = PatternGroup.class)
     private String password;
 
