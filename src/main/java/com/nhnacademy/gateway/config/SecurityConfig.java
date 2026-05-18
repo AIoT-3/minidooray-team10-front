@@ -1,13 +1,26 @@
 package com.nhnacademy.gateway.config;
 
+import com.nhnacademy.gateway.auth.handler.CustomLogoutHandler;
+import com.nhnacademy.gateway.auth.handler.LoginFailureHandler;
+import com.nhnacademy.gateway.auth.handler.LoginSuccessHandler;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final LoginSuccessHandler successHandler;
+    private final LoginFailureHandler failureHandler;
+    private final CustomLogoutHandler logoutHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         // URL 별 접근 권한 설정
@@ -22,10 +35,18 @@ public class SecurityConfig {
 
         http.formLogin(formLogin ->
                 formLogin.loginPage("/login")
-                        .usernameParameter("id")
-                        .passwordParameter("pwd")
                         .loginProcessingUrl("/login/process")
+                        .usernameParameter("email")
+                        .passwordParameter("pwd")
+                        .successHandler(successHandler)
+                        .failureHandler(failureHandler)
                         .permitAll()
+        );
+
+        http.logout(logout ->
+                logout.logoutUrl("/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessUrl("/login")
         );
 
 //        http.exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
@@ -33,5 +54,10 @@ public class SecurityConfig {
 //        );
 
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

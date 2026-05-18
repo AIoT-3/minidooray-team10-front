@@ -33,6 +33,7 @@
 
             <div class="row input-group-newsletter">
                 <div class="col">
+                   <!-- name, id 자동 생성, 기존 값 자동 유지-->
                     <input class="form-control"
                            th:field="*{email}"
                            placeholder="Email"/>
@@ -60,6 +61,10 @@
                     <div class="text-muted mt-2"
                          th:errors="*{name}"></div>
                 </div>
+            </div>
+
+            <div th:if="${error}" style="color:red; font-size: smaller">
+                <p th:text="${error}"></p>
             </div>
 
             <div class="row mt-4">

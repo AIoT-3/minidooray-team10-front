@@ -1,10 +1,10 @@
 package com.nhnacademy.gateway.controller.auth;
 
+import com.nhnacademy.gateway.api.AccountApiClient;
 import com.nhnacademy.gateway.dto.auth.SignUpRequest;
-import com.nhnacademy.gateway.exception.DuplicateEmailException;
-import com.nhnacademy.gateway.service.AccountService;
 import com.nhnacademy.gateway.validation.ValidationSequence;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,12 +16,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/signup")
 public class SignUpController {
 
-    private final AccountService accountService;
+    private final AccountApiClient accountApiClient;
 
     @GetMapping
-    public String signUpForm(Model model) {
+    public String signUpForm(Model model, Authentication authentication) {
         // 입력 받은 값을 dto에 넣을 수 있음
         model.addAttribute("signUpRequest", new SignUpRequest());
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/"; // 로그인 o -> home
+        }
+
         return "auth/signup";
     }
 
@@ -33,17 +38,7 @@ public class SignUpController {
             return "auth/signup";
         }
 
-        try {
-            accountService.signUp(request);
-        }catch (DuplicateEmailException e) {
-            // email 필드에 validation 에러 추가
-            bindingResult.rejectValue(
-                    "email",
-                    "duplicate",
-                    "이미 존재하는 이메일입니다."
-            );
-            return "auth/signup";
-        }
+        accountApiClient.signUp(request);
 
         return "redirect:/login";
     }

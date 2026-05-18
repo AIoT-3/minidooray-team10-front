@@ -1,16 +1,22 @@
-package com.nhnacademy.gateway.auth;
+package com.nhnacademy.gateway.api;
 
 import com.nhnacademy.gateway.dto.ErrorResponse;
+import com.nhnacademy.gateway.dto.account.MemberModifyRequest;
+import com.nhnacademy.gateway.dto.account.MemberResponse;
 import com.nhnacademy.gateway.dto.auth.AccountResponse;
 import com.nhnacademy.gateway.dto.auth.SignUpRequest;
+import com.nhnacademy.gateway.exception.ApiException;
 import com.nhnacademy.gateway.exception.DuplicateEmailException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.ObjectMapper;
 
+// TODO-Q exception을..
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AccountApiClient {
@@ -26,27 +32,50 @@ public class AccountApiClient {
     public void signUp(SignUpRequest request) {
         try {
             restTemplate.postForEntity(
-                    // TODO-R signup -> accounts가 더 restful (리소스 중심)
                     accountApiUrl + "/signup",
                     request,
                     Void.class
             );
+
+            log.debug("회원가입 요청");
         }catch (HttpClientErrorException e) {
             ErrorResponse response = parse(e);
-
             if("A010".equals(response.code())) {
                 throw new DuplicateEmailException();
             }
-
-            throw e;
+            throw new ApiException(response.status(), response.message());
         }
     }
 
-    public AccountResponse login(String email) {
+    /**
+     * 로그인
+     * email 전송 -> user 정보 받아오기
+     */
+    public AccountResponse findByEmail(String email) {
         return restTemplate.getForObject(
-                accountApiUrl + "/accounts/email/{email}",
-                AccountResponse.class,
-                email
+                accountApiUrl + "/account?email=" + email,
+                AccountResponse.class
+        );
+    }
+
+    /**
+     * 회원정보조회 (email, name)
+     */
+    public MemberResponse getMember() {
+        return restTemplate.getForObject(
+                accountApiUrl + "/members",
+                MemberResponse.class
+        );
+    }
+
+    /**
+     * 회원정보수정 (password, name)
+     */
+    public void modifyMember(MemberModifyRequest request) {
+        restTemplate.put(
+                accountApiUrl + "/members",
+                request,
+                Void.class
         );
     }
 

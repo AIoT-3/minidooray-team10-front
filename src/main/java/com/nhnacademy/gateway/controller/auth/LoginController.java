@@ -1,47 +1,31 @@
 package com.nhnacademy.gateway.controller.auth;
 
-import com.nhnacademy.gateway.dto.auth.AccountResponse;
-import com.nhnacademy.gateway.dto.auth.LoginRequest;
-import com.nhnacademy.gateway.exception.LoginFailedException;
-import com.nhnacademy.gateway.service.AccountService;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequiredArgsConstructor
-@RequestMapping("/login")
 public class LoginController {
+    @GetMapping("/login")
+    public String login(@RequestParam(required = false) String error,
+                        @RequestParam(required = false) String sleep,
+                        Model model,
+                        Authentication authentication) {
 
-    private final AccountService accountService;
-
-    @GetMapping
-    public String form() {
-        return "/auth/login";
-    }
-
-    @PostMapping
-    public String login(@Valid @ModelAttribute LoginRequest request, BindingResult bindingResult, HttpSession session) {
-
-        if (bindingResult.hasErrors()) {
-            return "/auth/login";
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/"; // 로그인 o -> home
         }
 
-        try {
-            AccountResponse account = accountService.login(request);
-            session.setAttribute("userId", account.id()); // 세션 생성
-
-            return "redirect:/";
-        } catch (LoginFailedException e) {
-            bindingResult.reject(
-                    "login.fail",
-                    "이메일 또는 비밀번호가 올바르지 않습니다."
-            );
-
-            return "/auth/login";
+        if (error != null) {
+            model.addAttribute("errorMessage", "이메일 또는 비밀번호가 올바르지 않습니다.");
         }
+
+        if(sleep != null) {
+            model.addAttribute("errorMessage", "탈퇴 처리된 계정입니다.");
+        }
+
+        return "auth/login";
     }
 }

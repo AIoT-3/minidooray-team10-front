@@ -30,10 +30,10 @@
             <h1 class="fst-italic lh-1 mb-4">Login</h1>
             <p class="mb-5">Spring Project Team10</p>
 
-            <form th:action="@{/login/process}" method="post">
+            <form action="/login/process" method="post">
                 <div class="row input-group-newsletter">
                     <div class="col">
-                        <input class="form-control" name="id" placeholder="Email"/>
+                        <input class="form-control" name="email" placeholder="Email"/>
                     </div>
                 </div>
 
@@ -41,6 +41,10 @@
                     <div class="col">
                         <input class="form-control" type="password" name="pwd" placeholder="Password"/>
                     </div>
+                </div>
+
+                <div th:if="${errorMessage}" style="color:red; font-size: xx-small">
+                    <p th:text="${errorMessage}"></p>
                 </div>
 
                 <div class="row mt-4">

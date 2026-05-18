@@ -1,6 +1,6 @@
 package com.nhnacademy.gateway.config;
 
-import com.nhnacademy.gateway.auth.RestTemplateInterceptor;
+import com.nhnacademy.gateway.api.UserIdHeaderInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class RestTemplateConfig {
 
-    private final RestTemplateInterceptor restTemplateHeaderInterceptor;
+    private final UserIdHeaderInterceptor restTemplateHeaderInterceptor;
 
     @Bean
     public RestTemplate restTemplate() {
@@ -21,7 +21,4 @@ public class RestTemplateConfig {
         restTemplate.setInterceptors(Collections.singletonList(restTemplateHeaderInterceptor));
         return restTemplate;
     }
-
-
-
 }
