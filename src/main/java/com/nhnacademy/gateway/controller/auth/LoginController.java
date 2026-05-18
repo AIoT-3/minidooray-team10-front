@@ -6,11 +6,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+// TODO-R
 @Controller
 public class LoginController {
     @GetMapping("/login")
     public String login(@RequestParam(required = false) String error,
                         @RequestParam(required = false) String terminate,
+                        @RequestParam(required = false) String dormant,
                         Model model,
                         Authentication authentication) {
 
@@ -24,6 +26,10 @@ public class LoginController {
 
         if(terminate != null) {
             model.addAttribute("errorMessage", "탈퇴 처리된 계정입니다.");
+        }
+
+        if(dormant != null) {
+            model.addAttribute("dormantModal", true);
         }
 
         return "auth/login";

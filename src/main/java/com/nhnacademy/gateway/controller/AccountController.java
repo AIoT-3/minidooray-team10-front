@@ -5,6 +5,7 @@ import com.nhnacademy.gateway.dto.account.MemberModifyRequest;
 import com.nhnacademy.gateway.dto.account.MemberResponse;
 import com.nhnacademy.gateway.validation.ValidationSequence;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -58,5 +59,14 @@ public class AccountController {
         return "redirect:/login";
     }
 
+    @PostMapping("/dormant/unlock")
+    public String dormantUnlock(HttpSession session) {
 
+        Long memberId = (Long) session.getAttribute("dormantMemberId");
+
+        accountApiClient.dormantUnlock(memberId);
+
+        session.removeAttribute("dormantMemberId");
+        return "redirect:/login";
+    }
 }

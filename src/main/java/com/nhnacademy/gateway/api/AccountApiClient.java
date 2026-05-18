@@ -51,7 +51,7 @@ public class AccountApiClient {
      * 로그인
      * email 전송 -> user 정보 받아오기
      */
-    public AccountResponse findByEmail(String email) {
+    public AccountResponse getByEmail(String email) {
         return restTemplate.getForObject(
                 accountApiUrl + "/account?email=" + email,
                 AccountResponse.class
@@ -84,6 +84,13 @@ public class AccountApiClient {
      */
     public void deleteMember() {
         restTemplate.delete(accountApiUrl + "/members");
+    }
+
+    /**
+     * 휴면해제
+     */
+    public void dormantUnlock(long memberId) {
+        restTemplate.put(accountApiUrl + "/members/" + memberId + "/active", null);
     }
 
     private ErrorResponse parse(HttpClientErrorException e) {

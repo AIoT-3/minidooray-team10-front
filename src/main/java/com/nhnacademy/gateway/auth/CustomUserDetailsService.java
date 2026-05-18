@@ -25,14 +25,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         // username = email;
-        AccountResponse account = accountApiClient.findByEmail(username);
+        AccountResponse account = accountApiClient.getByEmail(username);
 
         if (account.status() == Status.TERMINATE) {
             throw new DisabledException("탈퇴 회원");
         }
 
         if (account.status() == Status.SLEEP) {
-            throw new LockedException("휴면 회원");
+            throw new LockedException("휴면 회원"); // TODO-R exception이 발생하도록 놔두는게 맞나
         }
 
         return new AuthUser(account.id(), account.email(), account.password());
