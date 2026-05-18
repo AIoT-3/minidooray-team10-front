@@ -18,11 +18,11 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex) throws IOException, ServletException {
 
-        if (ex instanceof LockedException) {
+        if (ex.getCause() instanceof LockedException) {
             log.debug("휴면");
 //            setDefaultFailureUrl("/dormant");
-        } else if (ex instanceof DisabledException) {
-            setDefaultFailureUrl("/login?sleep");
+        } else if (ex.getCause() instanceof DisabledException) {
+            setDefaultFailureUrl("/login?terminate");
         } else {
             setDefaultFailureUrl("/login?error");
         }

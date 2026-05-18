@@ -12,7 +12,6 @@
             </div>
         </div>
 
-        <!-- TODO 조회 ?? -->
         <div class="row input-group-newsletter mt-3">
             <div class="col">
                 <input class="form-control" type="password" th:field="*{password}" placeholder="new password"/>
@@ -29,14 +28,20 @@
 
         <div class="row mt-4">
             <button class="btn btn-primary" type="submit">
-                Modify
+                수정
             </button>
         </div>
     </form>
 
     <form th:action="@{/logout}" method="post" style="margin-top: 20px;">
         <button type="submit" class="btn btn-danger">
-            Logout
+            로그아웃
+        </button>
+    </form>
+
+    <form th:action="@{/delete}" method="post" style="margin-top: 20px;">
+        <button type="submit" class="btn btn-danger">
+            회원탈퇴
         </button>
     </form>
 </body>

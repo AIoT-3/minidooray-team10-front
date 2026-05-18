@@ -4,7 +4,9 @@ import com.nhnacademy.gateway.api.AccountApiClient;
 import com.nhnacademy.gateway.dto.account.MemberModifyRequest;
 import com.nhnacademy.gateway.dto.account.MemberResponse;
 import com.nhnacademy.gateway.validation.ValidationSequence;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,4 +45,18 @@ public class AccountController {
 
         return "redirect:/mypage";
     }
+
+    @PostMapping("/delete")
+    public String deleteMember(HttpServletRequest request) {
+
+        accountApiClient.deleteMember(); // member 상태 변경
+
+        // 세션 정리
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate(); // Redis에 저장된 session도 같이 삭제됨
+
+        return "redirect:/login";
+    }
+
+
 }

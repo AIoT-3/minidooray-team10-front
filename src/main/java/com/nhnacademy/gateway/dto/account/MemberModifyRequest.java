@@ -12,10 +12,11 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class MemberModifyRequest {
 
-    @NotBlank(message = "비밀번호를 입력해주세요.", groups = NotBlankGroup.class)
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,20}$",
-            message = "8자 이상 20자 이하, 소문자/특수문자 포함",
-            groups = PatternGroup.class)
+    @Pattern(
+            regexp = "^$|^(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,20}$",
+            message = "8자 이상 20자 이하, 소문자/숫자/특수문자 포함",
+            groups = PatternGroup.class
+    )
     private String password;
 
     @NotBlank(message = "이름을 입력해주세요.", groups = NotBlankGroup.class)

@@ -79,6 +79,13 @@ public class AccountApiClient {
         );
     }
 
+    /**
+     * 회원탈퇴
+     */
+    public void deleteMember() {
+        restTemplate.delete(accountApiUrl + "/members");
+    }
+
     private ErrorResponse parse(HttpClientErrorException e) {
         try {
             return objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
