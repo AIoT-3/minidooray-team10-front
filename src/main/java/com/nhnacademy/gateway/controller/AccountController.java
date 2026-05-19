@@ -32,7 +32,7 @@ public class AccountController {
         model.addAttribute("email", response.email());
         model.addAttribute("memberModifyRequest", form);
 
-        return "layout/mypage";
+        return "account/mypage";
     }
 
     @PostMapping("/mypage")
@@ -47,7 +47,7 @@ public class AccountController {
         return "redirect:/mypage";
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/withdraw")
     public String deleteMember(HttpServletRequest request) {
 
         accountApiClient.deleteMember(); // member 상태 변경
