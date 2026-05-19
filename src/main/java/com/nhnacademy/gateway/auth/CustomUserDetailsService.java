@@ -32,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         if (account.status() == Status.SLEEP) {
-            throw new LockedException("휴면 회원"); // TODO-R exception이 발생하도록 놔두는게 맞나
+            throw new LockedException("휴면 회원");
         }
 
         return new AuthUser(account.id(), account.email(), account.password());

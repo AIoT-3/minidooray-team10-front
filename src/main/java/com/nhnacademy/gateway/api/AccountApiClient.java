@@ -2,6 +2,7 @@ package com.nhnacademy.gateway.api;
 
 import com.nhnacademy.gateway.dto.ErrorResponse;
 import com.nhnacademy.gateway.dto.account.MemberModifyRequest;
+import com.nhnacademy.gateway.dto.account.MemberNameResponse;
 import com.nhnacademy.gateway.dto.account.MemberResponse;
 import com.nhnacademy.gateway.dto.auth.AccountResponse;
 import com.nhnacademy.gateway.dto.auth.SignUpRequest;
@@ -15,7 +16,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.ObjectMapper;
 
-// TODO-Q exception을..
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -53,8 +53,19 @@ public class AccountApiClient {
      */
     public AccountResponse getByEmail(String email) {
         return restTemplate.getForObject(
-                accountApiUrl + "/account?email=" + email,
+                accountApiUrl + "/members/by-email?email=" + email,
                 AccountResponse.class
+        );
+    }
+
+    /**
+     * 로그인 성공 시 로그인 시간 업데이트 요청
+     */
+    public void loginAtUpdate() {
+        restTemplate.patchForObject(
+                accountApiUrl + "/members/me",
+                null,
+                Void.class
         );
     }
 
@@ -63,7 +74,7 @@ public class AccountApiClient {
      */
     public MemberResponse getMember() {
         return restTemplate.getForObject(
-                accountApiUrl + "/members",
+                accountApiUrl + "/members/me",
                 MemberResponse.class
         );
     }
@@ -73,9 +84,19 @@ public class AccountApiClient {
      */
     public void modifyMember(MemberModifyRequest request) {
         restTemplate.put(
-                accountApiUrl + "/members",
+                accountApiUrl + "/members/me",
                 request,
                 Void.class
+        );
+    }
+
+    /**
+     * 휴면해제
+     */
+    public void dormantUnlock(long memberId) {
+        restTemplate.put(
+                accountApiUrl + "/members/" + memberId + "/active",
+                null
         );
     }
 
@@ -83,14 +104,17 @@ public class AccountApiClient {
      * 회원탈퇴
      */
     public void deleteMember() {
-        restTemplate.delete(accountApiUrl + "/members");
+        restTemplate.delete(accountApiUrl + "/members/me/withdraw");
     }
 
     /**
-     * 휴면해제
+     * 회원 이름 반환
      */
-    public void dormantUnlock(long memberId) {
-        restTemplate.put(accountApiUrl + "/members/" + memberId + "/active", null);
+    public MemberNameResponse getMemberName() {
+        return restTemplate.getForObject(
+                accountApiUrl + "/members/me/name",
+                MemberNameResponse.class
+        );
     }
 
     private ErrorResponse parse(HttpClientErrorException e) {

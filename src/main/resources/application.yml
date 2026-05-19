@@ -21,4 +21,6 @@ spring:
 
 api:
   account:
-    url: http://localhost:8081/api
+    url: http://localhost:8000/api/account
+  task:
+    url: http://localhost:8000/api/projects

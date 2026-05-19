@@ -4,7 +4,6 @@ import com.nhnacademy.gateway.auth.handler.CustomLogoutHandler;
 import com.nhnacademy.gateway.auth.handler.LoginFailureHandler;
 import com.nhnacademy.gateway.auth.handler.LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,6 +47,7 @@ public class SecurityConfig {
                 logout.logoutUrl("/logout")
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessUrl("/login")
+                        .deleteCookies("SESSION")
         );
 
 //        http.exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
