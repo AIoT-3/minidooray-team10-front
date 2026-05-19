@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<h1>
+    <span th:text="${name}"></span>의 프로젝트 목록
+</h1>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">프로젝트명</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:if="${#lists.isEmpty(projects)}">
+            <td colspan="11">
+                등록된 프로젝트가 없습니다.
+            </td>
+        </tr>
+        <tr th:each="project : ${projects}">
+            <td th:text="${project.name()}"></td>
+            <td>
+                <a th:href="@{/projects/{projectId}(projectId=${project.id})}">
+                    수정
+                </a>
+            </td>
+            <td>
+                <!-- form -->
+                <button type="button">
+                    삭제
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div>
+    <form th:action="@{/projects}" th:object="${projectCreateRequest}" method="post">
+        <input type="text" th:field="*{projectName}" placeholder="New Project Name"/>
+        <button type="submit">프로젝트 생성</button>
+        <!-- TODO 에러 색상 변경 -->
+        <div class="text-muted mt-2" th:errors="*{projectName}"></div>
+    </form>
+</div>
+</body>
+</html>
+</html>

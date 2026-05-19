@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>프로젝트 수정</title>
+</head>
+<body>
+
+<div id="member">
+    Member
+
+</div>
+
+<div>
+    <form th:action="@{/projects/{projectId}(projectId=${project.id()})}" th:object="${projectNameModify}" method="post">
+        <input type="text" th:field="*{projectName}"/>
+        <div class="text-muted mt-2" th:errors="*{projectName}"></div>
+        <button type="submit">수정</button>
+    </form>
+</div>
+
+<div id="tag">
+    <span th:if="${#lists.isEmpty(tags)}">등록된 태그가 없습니다.</span>
+    <form th:action="@{/projects/{projectId}/tags/deactivate(projectId=${project.id()})}" method="post">
+
+        <div th:each="tag : ${tags}">
+            <!-- | ... | : Thymeleaf의 문자열 리터럴 치환 문법-->
+            <input type="checkbox" name="tagIds" th:value="${tag.id()}" th:id="|tag-${tag.id()}|"/>
+            <label th:for="|tag-${tag.id()}|" th:text="${tag.name()}"></label>
+        </div>
+
+        <button type="submit">삭제</button>
+    </form>
+
+    <form th:action="@{/projects/{projectId}/tags(projectId=${project.id()})}" th:object="${tagCreateRequest}" method="post">
+        <input type="text" th:field="*{name}"/>
+        <div class="text-muted mt-2" th:errors="*{name}"></div>
+        <button type="submit">+</button>
+    </form>
+</div>
+
+<div id="mileStone">
+    <span th:if="${#lists.isEmpty(milestones)}">등록된 마일스톤이 없습니다.</span>
+    <form th:action="@{/projects/{projectId}/milestones/deactivate(projectId=${project.id()})}" method="post">
+        <div th:each="milestone : ${milestones}">
+            <input type="checkbox" name="milestoneIds" th:value="${milestone.id()}" th:id="|tag-${milestone.id()}|"/>
+            <label th:for="|milestone-${milestone.id()}|" th:text="${milestone.name()}"></label>
+        </div>
+
+        <button type="submit">삭제</button>
+    </form>
+
+    <form th:action="@{/projects/{projectId}/milestones(projectId=${project.id()})}" th:object="${milestoneCreateRequest}" method="post">
+        <input type="text" th:field="*{name}"/>
+        <div class="text-muted mt-2" th:errors="*{name}"></div>
+        <button type="submit">+</button>
+    </form>
+</div>
+
+</body>
+</html>

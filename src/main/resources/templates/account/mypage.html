@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+</head>
+<body>
+    <form th:action="@{/mypage}" th:object="${memberModifyRequest}" method="post">
+        <div class="row input-group-newsletter">
+            <div class="col">
+                <input class="form-control" th:value="${email}" readonly/>
+            </div>
+        </div>
+
+        <div class="row input-group-newsletter mt-3">
+            <div class="col">
+                <input class="form-control" type="password" th:field="*{password}" placeholder="new password"/>
+                <div class="text-muted mt-2" th:errors="*{password}"></div>
+            </div>
+        </div>
+
+        <div class="row input-group-newsletter  mt-3">
+            <div class="col">
+                <input class="form-control" th:field="*{name}" placeholder="Name"/>
+                <div class="text-muted mt-2" th:errors="*{name}"></div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <button class="btn btn-primary" type="submit">
+                수정
+            </button>
+        </div>
+    </form>
+
+    <form th:action="@{/logout}" method="post" style="margin-top: 20px;">
+        <button type="submit" class="btn btn-danger">
+            로그아웃
+        </button>
+    </form>
+
+    <form th:action="@{/withdraw}" method="post" style="margin-top: 20px;">
+        <button type="submit" class="btn btn-danger">
+            회원탈퇴
+        </button>
+    </form>
+</body>
+</html>
+</html>

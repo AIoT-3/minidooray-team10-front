@@ -8,13 +8,19 @@ spring:
         form-filter:
           enabled: false  # HTML form 요청을 처리하는 필터 off (form body를 원본 그대로 전달)
 
+  session:
+    store-type: redis # HttpSession을 JVM 메모리 대신 Redis로
+    redis:
+      namespace: spring:session # HttpSession을 서버 메모리가 아닌 Redis에 저장
 
   data:
-    redis:
+    redis: # redis 연결 정보
       host: localhost
       port: 6379
-  session:
-    redis:
-      namespace: spring:session
+      database: 3
 
-
+api:
+  account:
+    url: http://localhost:8000/api/account
+  task:
+    url: http://localhost:8000/api/projects
