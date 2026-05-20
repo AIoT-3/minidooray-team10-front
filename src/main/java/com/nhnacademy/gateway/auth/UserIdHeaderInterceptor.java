@@ -1,6 +1,5 @@
-package com.nhnacademy.gateway.api;
+package com.nhnacademy.gateway.auth;
 
-import com.nhnacademy.gateway.auth.AuthUser;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -27,6 +26,7 @@ public class UserIdHeaderInterceptor implements ClientHttpRequestInterceptor {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.getPrincipal() instanceof AuthUser user) {
+
             outRequest.getHeaders().add(USER_ID, String.valueOf(user.getId()));
         }
 

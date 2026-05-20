@@ -2,7 +2,7 @@ package com.nhnacademy.gateway.auth;
 
 import com.nhnacademy.gateway.api.AccountApiClient;
 import com.nhnacademy.gateway.dto.auth.AccountResponse;
-import com.nhnacademy.gateway.dto.auth.Status;
+import com.nhnacademy.gateway.dto.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;

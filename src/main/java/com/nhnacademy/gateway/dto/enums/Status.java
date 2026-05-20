@@ -1,4 +1,4 @@
-package com.nhnacademy.gateway.dto.auth;
+package com.nhnacademy.gateway.dto.enums;
 
 public enum Status {
     ACTIVE,

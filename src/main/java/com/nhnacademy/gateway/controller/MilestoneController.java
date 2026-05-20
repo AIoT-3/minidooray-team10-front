@@ -11,19 +11,20 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/projects/{project-id}/milestones")
 public class MilestoneController {
 
     private final MilestoneApiClient milestoneApiClient;
 
-    @PostMapping("/projects/{project-id}/milestones")
+    @PostMapping
     public String createMilestones(@PathVariable("project-id") Long projectId,
                                    @Validated(ValidationSequence.class) @ModelAttribute MilestoneCreateRequest request,
                                    BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
-            // TODO
             return "project/projectModify";
         }
 
@@ -32,9 +33,15 @@ public class MilestoneController {
         return "redirect:/projects/" + projectId; // TODO-S redirect vs view 정리하기
     }
 
-    @PostMapping("/projects/{project-id}/milestones/deactivate")
+    @PostMapping("/delete")
     public String deleteMilestones(@PathVariable("project-id") Long projectId,
-                                   @ModelAttribute MilestoneDeleteRequest request) {
+                                   @Validated(ValidationSequence.class) @ModelAttribute MilestoneDeleteRequest request,
+                                   BindingResult bindingResult) {
+
+        if(bindingResult.hasErrors()) {
+
+            return "project/projectModify";
+        }
 
         milestoneApiClient.deleteMilestones(projectId, request);
 
