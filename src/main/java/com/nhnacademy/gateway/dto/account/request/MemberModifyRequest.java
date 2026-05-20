@@ -1,4 +1,4 @@
-package com.nhnacademy.gateway.dto.account;
+package com.nhnacademy.gateway.dto.account.request;
 
 import com.nhnacademy.gateway.validation.NotBlankGroup;
 import com.nhnacademy.gateway.validation.PatternGroup;

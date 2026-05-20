@@ -1,8 +1,8 @@
 package com.nhnacademy.gateway.controller;
 
 import com.nhnacademy.gateway.api.AccountApiClient;
-import com.nhnacademy.gateway.dto.account.MemberModifyRequest;
-import com.nhnacademy.gateway.dto.account.MemberResponse;
+import com.nhnacademy.gateway.dto.account.request.MemberModifyRequest;
+import com.nhnacademy.gateway.dto.account.response.MemberResponse;
 import com.nhnacademy.gateway.validation.ValidationSequence;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

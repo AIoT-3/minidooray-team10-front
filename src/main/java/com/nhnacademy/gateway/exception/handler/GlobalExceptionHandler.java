@@ -1,4 +1,4 @@
-package com.nhnacademy.gateway.handler;
+package com.nhnacademy.gateway.exception.handler;
 
 import com.nhnacademy.gateway.exception.ApiException;
 import org.springframework.ui.Model;

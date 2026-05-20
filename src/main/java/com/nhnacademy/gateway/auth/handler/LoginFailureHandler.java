@@ -21,7 +21,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex) throws IOException, ServletException {
-        if (ex.getCause() instanceof LockedException) {
+        if (ex.getCause() instanceof LockedException) { // 휴면회원
             String email = request.getParameter("email");
             AccountResponse member = accountApiClient.getByEmail(email);
 
@@ -31,7 +31,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
             );
 
             setDefaultFailureUrl("/login?dormant");
-        } else if (ex.getCause() instanceof DisabledException) {
+        } else if (ex.getCause() instanceof DisabledException) { // 탈퇴회원
             setDefaultFailureUrl("/login?terminate");
         } else {
             setDefaultFailureUrl("/login?error");

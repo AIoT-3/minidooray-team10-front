@@ -1,13 +1,10 @@
 package com.nhnacademy.gateway.api;
 
-import com.nhnacademy.gateway.dto.ErrorResponse;
-import com.nhnacademy.gateway.dto.project.ProjectCreateRequest;
-import com.nhnacademy.gateway.dto.project.ProjectMemberResponse;
-import com.nhnacademy.gateway.dto.project.ProjectModifyRequest;
-import com.nhnacademy.gateway.dto.project.ProjectResponse;
+import com.nhnacademy.gateway.dto.project.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -50,7 +47,7 @@ public class ProjectApiClient {
     /**
      * 프로젝트 단건 조회
      */
-    public ProjectResponse geProjectByProjectId(long projectId) {
+    public ProjectResponse getProjectByProjectId(long projectId) {
         return restTemplate.getForObject(
                 taskApiUrl + "/" + projectId,
                 ProjectResponse.class
@@ -70,12 +67,46 @@ public class ProjectApiClient {
     }
 
     /**
+     * 프로젝트 멤버 추가
+     */
+    public void addProjectMember(long projectId, ProjectAddMemberRequest request) {
+        restTemplate.postForEntity(
+                taskApiUrl + "/" + projectId + "/members",
+                request,
+                Void.class
+        );
+    }
+
+    /**
+     * 프로젝트 멤버 삭제
+     */
+    public void deleteProjectMember(long projectId, ProjectDeleteMembersRequest request) {
+        HttpEntity<ProjectDeleteMembersRequest> entity = new HttpEntity<>(request);
+
+        restTemplate.exchange(
+                taskApiUrl + "/" + projectId + "/members",
+                HttpMethod.DELETE,
+                entity,
+                Void.class
+        );
+    }
+
+    /**
      * 프로젝트 수정 (name)
      */
     public void modifyProjectName(long projectId, ProjectModifyRequest request) {
         restTemplate.put(
                 taskApiUrl + "/" + projectId,
                 request
+        );
+    }
+
+    /**
+     * 프로젝트 삭제
+     */
+    public void deleteProjectById(long projectId) {
+        restTemplate.delete(
+                taskApiUrl + "/" + projectId
         );
     }
 }

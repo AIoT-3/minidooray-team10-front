@@ -1,13 +1,19 @@
 package com.nhnacademy.gateway.api;
 
 import com.nhnacademy.gateway.dto.ErrorResponse;
-import com.nhnacademy.gateway.dto.account.MemberModifyRequest;
-import com.nhnacademy.gateway.dto.account.MemberNameResponse;
-import com.nhnacademy.gateway.dto.account.MemberResponse;
+import com.nhnacademy.gateway.dto.account.request.MemberEmailRequest;
+import com.nhnacademy.gateway.dto.account.request.MemberIdNameRequest;
+import com.nhnacademy.gateway.dto.account.request.MemberIdResponse;
+import com.nhnacademy.gateway.dto.account.request.MemberModifyRequest;
+import com.nhnacademy.gateway.dto.account.response.MemberListResponse;
+import com.nhnacademy.gateway.dto.account.response.MemberNameResponse;
+import com.nhnacademy.gateway.dto.account.response.MemberResponse;
 import com.nhnacademy.gateway.dto.auth.AccountResponse;
 import com.nhnacademy.gateway.dto.auth.SignUpRequest;
 import com.nhnacademy.gateway.exception.ApiException;
-import com.nhnacademy.gateway.exception.DuplicateEmailException;
+import com.nhnacademy.gateway.exception.account.DuplicateEmailException;
+import com.nhnacademy.gateway.exception.account.MemberInviteFailedException;
+import com.nhnacademy.gateway.exception.account.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +34,8 @@ public class AccountApiClient {
 
     /**
      * 회원가입 요청 (email, password, name)
+     * error
+     * - A010 : DuplicateEmailException (이메일 중복)
      */
     public void signUp(SignUpRequest request) {
         try {
@@ -115,6 +123,42 @@ public class AccountApiClient {
                 accountApiUrl + "/members/me/name",
                 MemberNameResponse.class
         );
+    }
+
+    /**
+     * 프로젝트 참여 회원 리스트
+     * request : List<id>
+     * response : List<id,name>
+     */
+    public MemberListResponse getMembersJoinProject(MemberIdNameRequest request) {
+        return restTemplate.postForEntity(
+                accountApiUrl + "/members/batch",
+                request,
+                MemberListResponse.class
+        ).getBody();
+    }
+
+    /**
+     * 프로젝트 추가 회원 아이디
+     * request : email
+     * response : id (ACTIVE 상태인 회원)
+     * error
+     * - A002 : MemberInviteFailedException (초대불가 - 탈퇴/휴면 회원 or 존재하지 않는 회원)
+     */
+    public MemberIdResponse getMemberIdByEmail(MemberEmailRequest request) {
+        try{
+            return restTemplate.postForEntity(
+                    accountApiUrl + "/members/id",
+                    request,
+                    MemberIdResponse.class
+            ).getBody();
+        }catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            if("A002".equals(error.code())) {
+                throw new MemberInviteFailedException();
+            }
+            throw new ApiException(error.status(), error.message());
+        }
     }
 
     private ErrorResponse parse(HttpClientErrorException e) {

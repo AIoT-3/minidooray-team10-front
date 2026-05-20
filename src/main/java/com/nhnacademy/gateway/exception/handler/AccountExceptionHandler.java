@@ -1,7 +1,7 @@
-package com.nhnacademy.gateway.handler;
+package com.nhnacademy.gateway.exception.handler;
 
 import com.nhnacademy.gateway.dto.auth.SignUpRequest;
-import com.nhnacademy.gateway.exception.DuplicateEmailException;
+import com.nhnacademy.gateway.exception.account.DuplicateEmailException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

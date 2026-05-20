@@ -1,4 +1,4 @@
-package com.nhnacademy.gateway.exception;
+package com.nhnacademy.gateway.exception.account;
 
 public class DuplicateEmailException extends RuntimeException {
     public DuplicateEmailException() {
