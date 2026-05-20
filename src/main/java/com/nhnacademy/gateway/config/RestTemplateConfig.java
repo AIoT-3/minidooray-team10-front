@@ -1,6 +1,6 @@
 package com.nhnacademy.gateway.config;
 
-import com.nhnacademy.gateway.api.UserIdHeaderInterceptor;
+import com.nhnacademy.gateway.auth.UserIdHeaderInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
