@@ -1,12 +1,19 @@
 package com.nhnacademy.gateway.api;
 
+import com.nhnacademy.gateway.dto.ErrorResponse;
 import com.nhnacademy.gateway.dto.project.*;
+import com.nhnacademy.gateway.exception.ApiException;
+import com.nhnacademy.gateway.exception.task.already.MemberAlreadyExistException;
+import com.nhnacademy.gateway.exception.task.already.ProjectAlreadyExistException;
+import com.nhnacademy.gateway.exception.task.auth.UnauthorizedAccessException;
+import com.nhnacademy.gateway.exception.task.notfound.ProjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.ObjectMapper;
 
@@ -37,21 +44,38 @@ public class ProjectApiClient {
      * 프로젝트 생성 요청 (name)
      */
     public void createProjectByName(ProjectCreateRequest request) {
-        restTemplate.postForEntity(
-                taskApiUrl,
-                request,
-                Void.class
-        );
+        try {
+            restTemplate.postForEntity(
+                    taskApiUrl,
+                    request,
+                    Void.class
+            );
+        } catch (HttpClientErrorException e) {
+            ErrorResponse response = parse(e);
+            if("P012".equals(response.code())) {
+                throw new ProjectAlreadyExistException();
+            }
+            throw new ApiException(response.status(), response.message());
+        }
     }
 
     /**
      * 프로젝트 단건 조회
      */
     public ProjectResponse getProjectByProjectId(long projectId) {
-        return restTemplate.getForObject(
-                taskApiUrl + "/" + projectId,
-                ProjectResponse.class
-        );
+        try {
+            return restTemplate.getForObject(
+                    taskApiUrl + "/" + projectId,
+                    ProjectResponse.class
+            );
+        } catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            if("P003".equals(error.code())) {
+                throw new ProjectNotFoundException(error.status());
+            }
+            throw new ApiException(error.status(), error.message());
+        }
+
     }
 
     /**
@@ -70,43 +94,87 @@ public class ProjectApiClient {
      * 프로젝트 멤버 추가
      */
     public void addProjectMember(long projectId, ProjectAddMemberRequest request) {
-        restTemplate.postForEntity(
-                taskApiUrl + "/" + projectId + "/members",
-                request,
-                Void.class
-        );
+        try {
+            restTemplate.postForEntity(
+                    taskApiUrl + "/" + projectId + "/members",
+                    request,
+                    Void.class
+            );
+        } catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            if("P003".equals(error.code())) {
+                throw new ProjectNotFoundException(error.status());
+            } else if ("B014".equals(error.code())) {
+                throw new MemberAlreadyExistException();
+            }
+            throw new ApiException(error.status(), error.message());
+        }
+
     }
 
     /**
      * 프로젝트 멤버 삭제
      */
     public void deleteProjectMember(long projectId, ProjectDeleteMembersRequest request) {
-        HttpEntity<ProjectDeleteMembersRequest> entity = new HttpEntity<>(request);
+        try {
+            HttpEntity<ProjectDeleteMembersRequest> entity = new HttpEntity<>(request);
 
-        restTemplate.exchange(
-                taskApiUrl + "/" + projectId + "/members",
-                HttpMethod.DELETE,
-                entity,
-                Void.class
-        );
+            restTemplate.exchange(
+                    taskApiUrl + "/" + projectId + "/members",
+                    HttpMethod.DELETE,
+                    entity,
+                    Void.class
+            );
+        } catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            if("P003".equals(error.code())) {
+                throw new UnauthorizedAccessException();
+            }
+            throw new ApiException(error.status(), error.message());
+        }
+
     }
 
     /**
      * 프로젝트 수정 (name)
      */
     public void modifyProjectName(long projectId, ProjectModifyRequest request) {
-        restTemplate.put(
-                taskApiUrl + "/" + projectId,
-                request
-        );
+        try {
+            restTemplate.put(
+                    taskApiUrl + "/" + projectId,
+                    request
+            );
+        } catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            if("P003".equals(error.code())) {
+                throw new ProjectNotFoundException(error.status());
+            }
+            throw new ApiException(error.status(), error.message());
+        }
     }
 
     /**
      * 프로젝트 삭제
      */
     public void deleteProjectById(long projectId) {
-        restTemplate.delete(
-                taskApiUrl + "/" + projectId
-        );
+        try {
+            restTemplate.delete(
+                    taskApiUrl + "/" + projectId
+            );
+        } catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            if("P003".equals(error.code())) {
+                throw new UnauthorizedAccessException();
+            }
+            throw new ApiException(error.status(), error.message());
+        }
+    }
+
+    private ErrorResponse parse(HttpClientErrorException e) {
+        try {
+            return objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
+        } catch (Exception ex) {
+            throw e;
+        }
     }
 }
