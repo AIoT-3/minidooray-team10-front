@@ -1,18 +1,19 @@
 package com.nhnacademy.gateway.controller;
 
-import com.nhnacademy.gateway.api.CommentApiClient;
 import com.nhnacademy.gateway.api.MilestoneApiClient;
 import com.nhnacademy.gateway.api.TagApiClient;
 import com.nhnacademy.gateway.api.TaskApiClient;
 import com.nhnacademy.gateway.auth.AuthUser;
 import com.nhnacademy.gateway.dto.comment.CommentAddTaskRequest;
-import com.nhnacademy.gateway.dto.comment.CommentResponse;
+import com.nhnacademy.gateway.dto.comment.CommentModifyRequest;
 import com.nhnacademy.gateway.dto.enums.TaskStatus;
 import com.nhnacademy.gateway.dto.milestone.MilestoneResponse;
 import com.nhnacademy.gateway.dto.tag.TagResponse;
 import com.nhnacademy.gateway.dto.task.TaskCreateRequest;
 import com.nhnacademy.gateway.dto.task.TaskDetailResponse;
 import com.nhnacademy.gateway.dto.task.TaskModifyRequest;
+import com.nhnacademy.gateway.service.PageLoadService;
+import com.nhnacademy.gateway.service.setting.TaskDetailSetting;
 import com.nhnacademy.gateway.validation.ValidationSequence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -31,19 +32,13 @@ public class TaskController {
     private final TaskApiClient taskApiClient;
     private final TagApiClient tagApiClient;
     private final MilestoneApiClient milestoneApiClient;
-    private final CommentApiClient commentApiClient;
+    private final PageLoadService pageLoadService;
 
     @GetMapping
     public String taskCreateForm(@PathVariable("project-id") Long projectId,
                                  Model model) {
-
-        List<TagResponse> tagResponses = tagApiClient.getTagListByProjectId(projectId);
-        List<MilestoneResponse> milestoneResponses = milestoneApiClient.getMilestoneListByProjectId(projectId);
-
+        taskCreateLoad(projectId, model);
         model.addAttribute("taskCreateRequest", new TaskCreateRequest());
-        model.addAttribute("projectId", projectId);
-        model.addAttribute("tags", tagResponses);
-        model.addAttribute("milestones", milestoneResponses);
 
         return "/task/taskCreate";
     }
@@ -51,15 +46,16 @@ public class TaskController {
     @PostMapping
     public String taskCreate(@PathVariable("project-id") Long projectId,
                              @Validated(ValidationSequence.class) @ModelAttribute TaskCreateRequest request,
-                             BindingResult bindingResult) {
+                             BindingResult bindingResult,
+                             Model model) {
         if(bindingResult.hasErrors()) {
-            // TODO - validation오류 설정
+            taskCreateLoad(projectId, model);
             return "task/taskCreate";
         }
 
         taskApiClient.createTask(projectId, request);
 
-        return "redirect:/projects" + projectId;
+        return "redirect:/projects/" + projectId;
     }
 
     @GetMapping("/{task-id}")
@@ -67,16 +63,15 @@ public class TaskController {
                                  @PathVariable("task-id") Long taskId,
                                  Model model,
                                  Authentication authentication) {
-        TaskDetailResponse response = taskApiClient.getTaskDetail(projectId, taskId);
-        List<CommentResponse> comments = commentApiClient.getCommentsByTaskId(projectId, taskId);
+        TaskDetailSetting setting = pageLoadService.loadTaskDetail(projectId, taskId);
         Long userId = ((AuthUser) authentication.getPrincipal()).getId();
 
-        model.addAttribute("task", response);
+        model.addAttribute("task", setting.taskDetailResponse());
         model.addAttribute("projectId", projectId);
-        model.addAttribute("comments", comments);
+        model.addAttribute("comments", setting.commentResponses());
         model.addAttribute("loginUserId", userId);
 
-        model.addAttribute("commentAddRequest", new CommentAddTaskRequest());
+        model.addAttribute("commentAddTaskRequest", new CommentAddTaskRequest());
         return "task/taskDetail";
     }
 
@@ -106,7 +101,6 @@ public class TaskController {
                              BindingResult bindingResult) {
 
         if(bindingResult.hasErrors()) {
-
             return "task/taskModify";
         }
         taskApiClient.modifyTask(projectId, taskId, request);
@@ -121,4 +115,14 @@ public class TaskController {
 
         return "redirect:/projects/" + projectId;
     }
+
+    private void taskCreateLoad(long projectId, Model model) {
+        List<TagResponse> tagResponses = tagApiClient.getTagListByProjectId(projectId);
+        List<MilestoneResponse> milestoneResponses = milestoneApiClient.getMilestoneListByProjectId(projectId);
+
+        model.addAttribute("projectId", projectId);
+        model.addAttribute("tags", tagResponses);
+        model.addAttribute("milestones", milestoneResponses);
+    }
+
 }

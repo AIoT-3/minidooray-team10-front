@@ -21,9 +21,9 @@ public class HomeController {
 
     @GetMapping
     public String home(Model model) {
-        model.addAttribute("name", accountApiClient.getMemberName().name());
-
         List<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId();
+
+        model.addAttribute("name", accountApiClient.getMemberName().name());
         model.addAttribute("projects", projectResponses);
 
         model.addAttribute("projectCreateRequest", new ProjectCreateRequest());

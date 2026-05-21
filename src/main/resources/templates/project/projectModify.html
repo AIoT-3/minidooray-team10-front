@@ -13,14 +13,14 @@
         <form th:action="@{/projects/{projectId}/members/delete(projectId=${project.id()})}" method="post">
             <div th:each="member : ${members}">
                 <!-- | ... | : Thymeleaf의 문자열 리터럴 치환 문법-->
-                <input type="checkbox" name="userIds" th:value="${member.id()}" th:id="|member-${member.id()}|"/>
+                <input th:unless="${adminUserId} == ${member.id()}" type="checkbox" name="userIds" th:value="${member.id()}" th:id="|member-${member.id()}|"/>
                 <label th:for="|member-${member.id()}|" th:text="${member.name()}"></label>
             </div>
             <button type="submit">삭제</button>
         </form>
 
         <form class="mt-2" th:action="@{/projects/{projectId}/members(projectId=${project.id()})}" method="post">
-            <input type="text" placeholder="이메일을 입력해주세요" name="email" required>
+            <input type="email" placeholder="이메일을 입력해주세요" name="email" required>
             <button type="submit">멤버 추가</button>
         </form>
         <div th:if="${errorMsg != null}" class="text-danger mt-2">
@@ -35,9 +35,9 @@
 
 <div class="mt-3">
     ProjectName
-    <form th:action="@{/projects/{projectId}/modify(projectId=${project.id()})}" th:object="${projectModify}" method="post">
+    <form th:action="@{/projects/{projectId}/modify(projectId=${project.id()})}" th:object="${projectModifyRequest}" method="post">
         <input type="text" th:field="*{projectName}"/>
-        <div class="text-muted mt-2" th:error="*{projectName}"></div>
+        <div class="text-danger mt-2" th:errors="*{projectName}"></div>
         <select class="form-select" th:field="*{status}" required>
             <option th:each="status : ${projectStatus}" th:value="${status.name}" th:text="${status.name}" ></option>
         </select>
@@ -46,8 +46,7 @@
 </div>
 
 <div id="tag" class="mt-3">
-    TAG
-    <span th:if="${#lists.isEmpty(tags)}">등록된 태그가 없습니다.</span>
+    <span class="text-danger" th:if="${#lists.isEmpty(tags)}">등록된 태그가 없습니다.</span>
     <form th:action="@{/projects/{projectId}/tags/delete(projectId=${project.id()})}" th:object="${tagDeleteRequest}" method="post">
 
         <div th:each="tag : ${tags}">
@@ -55,20 +54,19 @@
             <input type="checkbox" name="tagIds" th:value="${tag.id()}" th:id="|tag-${tag.id()}|"/>
             <label th:for="|tag-${tag.id()}|" th:text="${tag.name()}"></label>
         </div>
-        <div class="text-muted mt-2" th:error="*{tagIds}"></div>
+        <div class="text-danger mt-2" th:errors="*{tagIds}"></div>
         <button type="submit">삭제</button>
     </form>
 
     <form th:action="@{/projects/{projectId}/tags(projectId=${project.id()})}" th:object="${tagCreateRequest}" method="post">
-        <input type="text" th:field="*{name}"/>
-        <div class="text-muted mt-2" th:error="*{name}"></div>
+        <input type="text" th:field="*{name}" placeholder="Tag Name"/>
+        <div class="text-danger mt-2" th:errors="*{name}"></div>
         <button type="submit">+</button>
     </form>
 </div>
 
 <div id="mileStone">
-    MileStone
-    <span th:if="${#lists.isEmpty(milestones)}">등록된 마일스톤이 없습니다.</span>
+    <span th:if="${#lists.isEmpty(milestones)}" class="text-danger">등록된 마일스톤이 없습니다.</span>
     <form th:action="@{/projects/{projectId}/milestones/delete(projectId=${project.id()})}" method="post">
         <div th:each="milestone : ${milestones}">
             <input type="checkbox" name="milestoneIds" th:value="${milestone.id()}" th:id="|tag-${milestone.id()}|"/>
@@ -79,8 +77,8 @@
     </form>
 
     <form th:action="@{/projects/{projectId}/milestones(projectId=${project.id()})}" th:object="${milestoneCreateRequest}" method="post">
-        <input type="text" th:field="*{name}"/>
-        <div class="text-muted mt-2" th:error="*{name}"></div>
+        <input type="text" th:field="*{name}" placeholder="Milestone Name"/>
+        <div class="text-danger mt-2" th:errors="*{name}"></div>
         <button type="submit">+</button>
     </form>
 </div>
