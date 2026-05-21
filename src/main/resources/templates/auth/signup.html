@@ -38,7 +38,7 @@
                            th:field="*{email}"
                            placeholder="Email"/>
                     <div class="text-muted mt-2"
-                         th:error="*{email}"></div>
+                         th:errors="*{email}"></div>
                 </div>
             </div>
 
@@ -49,7 +49,7 @@
                            th:field="*{password}"
                            placeholder="Password"/>
                     <div class="text-muted mt-2"
-                         th:error="*{password}"></div>
+                         th:errors="*{password}"></div>
                 </div>
             </div>
 
@@ -59,12 +59,12 @@
                            th:field="*{name}"
                            placeholder="Name"/>
                     <div class="text-muted mt-2"
-                         th:error="*{name}"></div>
+                         th:errors="*{name}"></div>
                 </div>
             </div>
 
-            <div th:if="${error}" style="color:red; font-size: smaller">
-                <p th:text="${error}"></p>
+            <div th:if="${errorMsg != null}" class="text-danger mt-2">
+                <p th:text="${errorMsg}"></p>
             </div>
 
             <div class="row mt-4">

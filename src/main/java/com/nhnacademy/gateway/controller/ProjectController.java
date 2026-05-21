@@ -16,6 +16,7 @@ import com.nhnacademy.gateway.dto.tag.TagCreateRequest;
 import com.nhnacademy.gateway.dto.tag.TagDeleteRequest;
 import com.nhnacademy.gateway.dto.tag.TagResponse;
 import com.nhnacademy.gateway.dto.task.TaskResponse;
+import com.nhnacademy.gateway.exception.account.MemberInviteFailedException;
 import com.nhnacademy.gateway.validation.ValidationSequence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -139,9 +140,18 @@ public class ProjectController {
 
     @PostMapping("/{project-id}/members")
     public String memberInviteProject(@PathVariable("project-id") Long projectId,
-                                      @ModelAttribute MemberEmailRequest request) {
+                                      @ModelAttribute MemberEmailRequest request,
+                                      Model model) {
 
-        MemberIdResponse memberIdResponse = accountApiClient.getMemberIdByEmail(request); // 추가 가능한 멤버인지
+        MemberIdResponse memberIdResponse;
+
+        try {
+            memberIdResponse = accountApiClient.getMemberIdByEmail(request); // 추가 가능한 멤버인지
+        }catch (MemberInviteFailedException e) {
+            // TODO 세팅을..
+            model.addAttribute("errorMsg", e.getMessage());
+            return "project/projectModify";
+        }
 
         projectApiClient.addProjectMember(projectId, ProjectAddMemberRequest.from(memberIdResponse)); // 실제 추가
 
