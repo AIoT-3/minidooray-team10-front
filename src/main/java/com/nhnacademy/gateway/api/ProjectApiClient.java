@@ -1,6 +1,7 @@
 package com.nhnacademy.gateway.api;
 
 import com.nhnacademy.gateway.dto.ErrorResponse;
+import com.nhnacademy.gateway.dto.enums.ProjectStatus;
 import com.nhnacademy.gateway.dto.project.*;
 import com.nhnacademy.gateway.exception.ApiException;
 import com.nhnacademy.gateway.exception.task.already.MemberAlreadyExistException;
@@ -10,6 +11,7 @@ import com.nhnacademy.gateway.exception.task.notfound.ProjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -31,12 +33,12 @@ public class ProjectApiClient {
     /**
      * 프로젝트 리스트 조회 (memberId)
      */
-    public List<ProjectResponse> getProjectsByMemberId() {
+    public PageResponse<ProjectResponse> getProjectsByMemberId(ProjectStatus status) {
         return restTemplate.exchange(
-                taskApiUrl,
+                taskApiUrl + "?status=" + status.name(),
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<ProjectResponse>>(){}
+                new ParameterizedTypeReference<PageResponse<ProjectResponse>>(){}
         ).getBody();
     }
 

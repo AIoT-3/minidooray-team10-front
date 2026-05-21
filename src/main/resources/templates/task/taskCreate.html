@@ -3,51 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <title>Task 생성</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 
-<h1>Task 생성</h1>
+<div th:replace="~{fragment/header :: header}"></div>
 
-<div>
-    <form th:action="@{/projects/{projectId}/tasks(projectId=${projectId})}" th:object="${taskCreateRequest}" method="post">
-        <input type="text" th:field="*{title}" placeholder="Task Name"/>
-        <div class="text-danger mt-2" th:errors="*{title}"></div>
+<div class="container py-5">
+    <h2 class="text-center mb-5">Task 생성</h2>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header fw-bold">Task Create</div>
 
-        <div class="mt-3">
-            <textarea th:field="*{content}" style="height: 50px; width: 400px; resize: none;" maxlength="500" placeholder="Task Content"></textarea>
-            <div><span id="count">0</span>/500</div>
-            <div id="content" class="text-danger mt-2" th:errors="*{content}"></div>
+                <div class="card-body">
+                    <form th:action="@{/projects/{projectId}/tasks(projectId=${projectId})}" th:object="${taskCreateRequest}" method="post">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">제목</label>
+
+                            <input class="form-control" type="text" th:field="*{title}" placeholder="Task Name"/>
+
+                            <div class="text-danger mt-2" th:errors="*{title}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">내용</label>
+
+                            <textarea id="taskContent" class="form-control" style="resize: none; height: 250px"
+                                      th:field="*{content}" rows="5" maxlength="500" placeholder="Task Content"></textarea>
+
+                            <div class="text-end mt-1">
+                                <span id="count">0</span>/500
+                            </div>
+
+                            <div class="text-danger mt-2" th:errors="*{content}"></div>
+                        </div>
+
+                        <div class="mb-4" th:if="${#lists.isEmpty(tags) || #lists.isEmpty(milestones)}">
+                            <a class="btn btn-danger w-100" th:href="@{/projects/{projectId}/modify(projectId=${projectId})}">태그/마일스톤을 먼저 등록해주세요</a>
+                        </div>
+
+                        <div class="mb-4" th:unless="${#lists.isEmpty(tags)}">
+                            <label class="form-label fw-semibold">Tag</label>
+                            <div class="border rounded p-3">
+                                <div th:each="tag : ${tags}" class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" th:field="*{tagIds}" th:value="${tag.id()}">
+
+                                    <label class="form-check-label" th:text="${tag.name()}"></label>
+                                </div>
+                            </div>
+
+                            <div class="text-danger mt-2" th:errors="*{tagIds}"></div>
+                        </div>
+
+                        <div class="mb-4" th:unless="${#lists.isEmpty(milestones)}">
+
+                            <label class="form-label fw-semibold">Milestone</label>
+
+                            <select class="form-select" name="milestoneId" required>
+                                <option th:each="milestone : ${milestones}"
+                                        th:value="${milestone.id()}"
+                                        th:text="${milestone.name()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">시작일</label>
+
+                                <input type="date" class="form-control" name="startDate">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">마감일</label>
+
+                                <input type="date" class="form-control" name="deadline">
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-4">생성</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
+    </div>
 
-        <div class="mt-3" th:if="${#lists.isEmpty(tags) || #lists.isEmpty(milestones)}">
-            <a class="btn btn-danger" th:href="@{/projects/{projectId}(projectId=${projectId})}">태그/마일스톤을 먼저 등록해주세요.</a>
-        </div>
-        <div th:unless="${#lists.isEmpty(tags)}" th:each="tag : ${tags}" class="form-check">
-            <input class="form-check-input" type="checkbox" th:field="*{tagIds}" th:value="${tag.id()}">
-            <label class="form-check-label" th:text="${tag.name()}"></label>
-        </div>
-        <div class="text-danger mt-2" th:errors="*{tagIds}"></div>
-
-        <select th:unless="${#lists.isEmpty(milestones)}" class="form-select" name="milestoneId" required>
-            <option th:each="milestone : ${milestones}" th:value="${milestone.id()}" th:text="${milestone.name()}"></option>
-        </select>
-
-        <div class="mb-3">
-            <label for="deadline" class="form-label">생성일</label>
-            <input type="date" class="form-control" id="startDate" name="statDate">
-        </div>
-
-        <div class="mb-3">
-            <label for="deadline" class="form-label">마감일</label>
-            <input type="date" class="form-control" id="deadline" name="deadline">
-        </div>
-        <button type="submit" class="btn btn-dark">생성</button>
-    </form>
 </div>
 
 <script>
-    const textarea = document.getElementById('content');
+    const textarea = document.getElementById('taskContent');
     const count = document.getElementById('count');
 
     function updateCount() {

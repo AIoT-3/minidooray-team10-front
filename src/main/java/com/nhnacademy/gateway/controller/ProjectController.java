@@ -3,18 +3,10 @@ package com.nhnacademy.gateway.controller;
 import com.nhnacademy.gateway.api.*;
 import com.nhnacademy.gateway.auth.AuthUser;
 import com.nhnacademy.gateway.dto.account.request.MemberEmailRequest;
-import com.nhnacademy.gateway.dto.account.request.MemberIdNameRequest;
 import com.nhnacademy.gateway.dto.account.request.MemberIdResponse;
-import com.nhnacademy.gateway.dto.account.response.MemberListResponse;
 import com.nhnacademy.gateway.dto.enums.ProjectStatus;
-import com.nhnacademy.gateway.dto.enums.Role;
-import com.nhnacademy.gateway.dto.milestone.MilestoneCreateRequest;
-import com.nhnacademy.gateway.dto.milestone.MilestoneDeleteRequest;
 import com.nhnacademy.gateway.dto.milestone.MilestoneResponse;
 import com.nhnacademy.gateway.dto.project.*;
-import com.nhnacademy.gateway.dto.tag.TagCreateRequest;
-import com.nhnacademy.gateway.dto.tag.TagDeleteRequest;
-import com.nhnacademy.gateway.dto.tag.TagResponse;
 import com.nhnacademy.gateway.dto.task.TaskResponse;
 import com.nhnacademy.gateway.exception.account.MemberInviteFailedException;
 import com.nhnacademy.gateway.service.PageLoadService;
@@ -28,6 +20,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Controller
@@ -48,11 +42,10 @@ public class ProjectController {
 
         if(bindingResult.hasErrors()) {
             String name = accountApiClient.getMemberName().name();
-            List<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId();
+            PageResponse<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId(ProjectStatus.ACTIVE);
 
             model.addAttribute("name", name);
             model.addAttribute("projects", projectResponses);
-
             return "index";
         }
 
@@ -81,16 +74,16 @@ public class ProjectController {
                                     Authentication authentication,
                                     Model model) {
         projectModifyLoad(projectId, authentication, model);
-
         return "project/projectModify";
     }
 
     @PostMapping("/{project-id}/modify")
-    public String projectNameModify(@PathVariable("project-id") Long projectId,
-                                    @Validated(ValidationSequence.class) @ModelAttribute ProjectModifyRequest request,
-                                    BindingResult bindingResult,
-                                    Authentication authentication,
-                                    Model model) {
+    public String projectModify(@PathVariable("project-id") Long projectId,
+                                @Validated(ValidationSequence.class) @ModelAttribute ProjectModifyRequest request,
+                                BindingResult bindingResult,
+                                Authentication authentication,
+                                Model model) {
+
         if(bindingResult.hasErrors()) {
             projectModifyLoad(projectId, authentication, model);
             return "project/projectModify";
@@ -98,7 +91,7 @@ public class ProjectController {
 
         projectApiClient.modifyProjectName(projectId, request);
 
-        return "redirect:/projects/" + projectId;
+        return "redirect:/projects/" + projectId + "/modify";
     }
 
     @PostMapping("/{project-id}/delete")
@@ -125,7 +118,7 @@ public class ProjectController {
 
         projectApiClient.addProjectMember(projectId, ProjectAddMemberRequest.from(memberIdResponse)); // 실제 추가
 
-        return "redirect:/projects/" + projectId;
+        return "redirect:/projects/" + projectId + "/modify";
     }
 
     @PostMapping("/{project-id}/members/delete")
@@ -133,7 +126,7 @@ public class ProjectController {
                                       @ModelAttribute ProjectDeleteMembersRequest request) {
         projectApiClient.deleteProjectMember(projectId, request);
 
-        return "redirect:/projects/" + projectId;
+        return "redirect:/projects/" + projectId + "/modify";
     }
 
     private void projectModifyLoad(long projectId, Authentication authentication, Model model) {
@@ -143,20 +136,16 @@ public class ProjectController {
 
         model.addAttribute("members", setting.memberListResponse().data());
         model.addAttribute("project", setting.projectResponse());
-        model.addAttribute("projectStatus", ProjectStatus.values());
         model.addAttribute("tags", setting.tagResponses());
         model.addAttribute("milestones", setting.milestoneResponses());
+//        model.addAttribute("setting", setting); TODO 이 방법으로 수정
+        model.addAttribute("projectStatus", ProjectStatus.values());
         model.addAttribute("adminUserId", adminUserId);
         model.addAttribute("loginUserId", userId);
 
         ProjectModifyRequest modifyRequest = new ProjectModifyRequest();
         modifyRequest.setProjectName(setting.projectResponse().name());
         modifyRequest.setStatus(setting.projectResponse().status());
-
         model.addAttribute("projectModifyRequest", modifyRequest);
-        model.addAttribute("tagCreateRequest", new TagCreateRequest());
-        model.addAttribute("tagDeleteRequest", new TagDeleteRequest());
-        model.addAttribute("milestoneCreateRequest", new MilestoneCreateRequest());
-        model.addAttribute("milestoneDeleteRequest", new MilestoneDeleteRequest());
     }
 }
