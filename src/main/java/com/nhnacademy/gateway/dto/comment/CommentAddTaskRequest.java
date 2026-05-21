@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CommentAddTaskRequest {
-    @NotBlank(message = "내용을 작성해주세요", groups = NotBlankGroup.class)
+    @NotBlank(message = "댓글을 작성해주세요", groups = NotBlankGroup.class)
     @Size(max =  500, message = "내용은 500자 이내로 작성해야 합니다.", groups = PatternGroup.class)
     String content;
 }

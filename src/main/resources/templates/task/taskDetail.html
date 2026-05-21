@@ -36,8 +36,9 @@
     <h4> Comment </h4>
 
     <form th:action="@{/projects/{projectId}/tasks/{taskId}/comments(projectId=${projectId}, taskId=${task.id()})}"
-          th:object="${commentAddRequest}" method="post">
+          th:object="${commentAddTaskRequest}" method="post">
         <textarea id="createContent" style="height: 50px; width: 400px; resize: none;" maxlength="500" th:field="*{content}"></textarea>
+        <div class="text-danger mt-1" th:errors="*{content}"></div>
         <div>
             <span id="createCount">0</span>/500
             <button class="btn btn-dark" type="submit">등록</button>
