@@ -8,7 +8,7 @@
 <body>
 <h3 th:text="${project.name()}"></h3>
 
-<a class="btn btn-warning" th:href="@{/projects/{projectId}/tasks(projectId=${project.id()})}">Task 생성</a>
+<a class="btn btn-dark" th:href="@{/projects/{projectId}/tasks(projectId=${project.id()})}">Task 생성</a>
 
 <div>
     <!-- TODO milestone 별로 task 분리 -->

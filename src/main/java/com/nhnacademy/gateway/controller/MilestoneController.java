@@ -1,11 +1,17 @@
 package com.nhnacademy.gateway.controller;
 
 import com.nhnacademy.gateway.api.MilestoneApiClient;
+import com.nhnacademy.gateway.auth.AuthUser;
+import com.nhnacademy.gateway.dto.enums.ProjectStatus;
 import com.nhnacademy.gateway.dto.milestone.MilestoneCreateRequest;
 import com.nhnacademy.gateway.dto.milestone.MilestoneDeleteRequest;
+import com.nhnacademy.gateway.service.PageLoadService;
+import com.nhnacademy.gateway.service.setting.ProjectModifySetting;
 import com.nhnacademy.gateway.validation.ValidationSequence;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,32 +25,52 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MilestoneController {
 
     private final MilestoneApiClient milestoneApiClient;
+    private final PageLoadService pageLoadService;
 
     @PostMapping
     public String createMilestones(@PathVariable("project-id") Long projectId,
                                    @Validated(ValidationSequence.class) @ModelAttribute MilestoneCreateRequest request,
-                                   BindingResult bindingResult) {
+                                   BindingResult bindingResult,
+                                   Authentication authentication,
+                                   Model model) {
         if(bindingResult.hasErrors()) {
+            projectModifyLoad(projectId, authentication, model);
             return "project/projectModify";
         }
 
         milestoneApiClient.createMilestoneToProject(projectId, request);
 
-        return "redirect:/projects/" + projectId; // TODO-S redirect vs view 정리하기
+        return "redirect:/projects/" + projectId + "/modify"; // TODO-S redirect vs view 정리하기
     }
 
     @PostMapping("/delete")
     public String deleteMilestones(@PathVariable("project-id") Long projectId,
                                    @Validated(ValidationSequence.class) @ModelAttribute MilestoneDeleteRequest request,
-                                   BindingResult bindingResult) {
+                                   BindingResult bindingResult,
+                                   Authentication authentication,
+                                   Model model) {
 
         if(bindingResult.hasErrors()) {
-
+            projectModifyLoad(projectId, authentication, model);
             return "project/projectModify";
         }
 
         milestoneApiClient.deleteMilestones(projectId, request);
 
-        return "redirect:/projects/" + projectId;
+        return "redirect:/projects/" + projectId + "/modify";
+    }
+
+    private void projectModifyLoad(long projectId, Authentication authentication, Model model) {
+        ProjectModifySetting setting = pageLoadService.loadProjectModify(projectId);
+        Long adminUserId = setting.adminUserId();
+        Long userId = ((AuthUser) authentication.getPrincipal()).getId();
+
+        model.addAttribute("members", setting.memberListResponse().data());
+        model.addAttribute("project", setting.projectResponse());
+        model.addAttribute("projectStatus", ProjectStatus.values());
+        model.addAttribute("tags", setting.tagResponses());
+        model.addAttribute("milestones", setting.milestoneResponses());
+        model.addAttribute("adminUserId", adminUserId);
+        model.addAttribute("loginUserId", userId);
     }
 }

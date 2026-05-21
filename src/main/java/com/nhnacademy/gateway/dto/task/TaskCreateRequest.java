@@ -3,6 +3,7 @@ package com.nhnacademy.gateway.dto.task;
 import com.nhnacademy.gateway.validation.NotBlankGroup;
 import com.nhnacademy.gateway.validation.PatternGroup;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class TaskCreateRequest {
     @NotNull(message = "MileStone 선택은 필수입니다.", groups = NotBlankGroup.class)
     Long milestoneId;
 
-    @NotNull(message = "Tag는 최소 1개 이상 선택해야합니다.", groups = NotBlankGroup.class)
+    @NotEmpty(message = "Tag는 최소 1개 이상 선택해야합니다.", groups = NotBlankGroup.class)
     List<Long> tagIds;
 
     LocalDate startDate;

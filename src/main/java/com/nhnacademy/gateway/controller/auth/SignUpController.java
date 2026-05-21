@@ -2,6 +2,7 @@ package com.nhnacademy.gateway.controller.auth;
 
 import com.nhnacademy.gateway.api.AccountApiClient;
 import com.nhnacademy.gateway.dto.auth.SignUpRequest;
+import com.nhnacademy.gateway.exception.account.DuplicateEmailException;
 import com.nhnacademy.gateway.validation.ValidationSequence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -32,13 +33,19 @@ public class SignUpController {
 
     @PostMapping
     public String signUp(@Validated(ValidationSequence.class) @ModelAttribute SignUpRequest request,
-                         BindingResult bindingResult) {
+                         BindingResult bindingResult,
+                         Model model) {
 
         if(bindingResult.hasErrors()) {
             return "auth/signup";
         }
 
-        accountApiClient.signUp(request);
+        try {
+            accountApiClient.signUp(request);
+        }catch (DuplicateEmailException e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            return "/auth/signup";
+        }
 
         return "redirect:/login";
     }

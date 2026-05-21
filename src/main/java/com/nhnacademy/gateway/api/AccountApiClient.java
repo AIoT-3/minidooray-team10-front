@@ -81,21 +81,34 @@ public class AccountApiClient {
      * 회원정보조회 (email, name)
      */
     public MemberResponse getMember() {
-        return restTemplate.getForObject(
-                accountApiUrl + "/members/me",
-                MemberResponse.class
-        );
+        try {
+            return restTemplate.getForObject(
+                    accountApiUrl + "/members/me",
+                    MemberResponse.class
+            );
+        }catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            if("A001".equals(error.code())) {
+                throw new MemberNotFoundException(error.status());
+            }
+            throw new ApiException(error.status(), error.message());
+        }
     }
 
     /**
      * 회원정보수정 (password, name)
      */
     public void modifyMember(MemberModifyRequest request) {
-        restTemplate.put(
-                accountApiUrl + "/members/me",
-                request,
-                Void.class
-        );
+        try {
+            restTemplate.put(
+                    accountApiUrl + "/members/me",
+                    request,
+                    Void.class
+            );
+        }catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            throw new ApiException(error.status(), error.message());
+        }
     }
 
     /**
@@ -119,10 +132,15 @@ public class AccountApiClient {
      * 회원 이름 반환
      */
     public MemberNameResponse getMemberName() {
-        return restTemplate.getForObject(
-                accountApiUrl + "/members/me/name",
-                MemberNameResponse.class
-        );
+        try {
+            return restTemplate.getForObject(
+                    accountApiUrl + "/members/me/name",
+                    MemberNameResponse.class
+            );
+        }catch (HttpClientErrorException e) {
+            ErrorResponse error = parse(e);
+            throw new ApiException(error.status(), error.message());
+        }
     }
 
     /**

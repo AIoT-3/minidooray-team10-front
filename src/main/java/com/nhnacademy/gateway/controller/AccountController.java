@@ -37,9 +37,12 @@ public class AccountController {
 
     @PostMapping("/mypage")
     public String updateMember(@Validated(ValidationSequence.class) @ModelAttribute MemberModifyRequest request,
-                               BindingResult bindingResult) {
+                               BindingResult bindingResult,
+                               Model model) {
         if(bindingResult.hasErrors()) {
-            return "layout/mypage";
+            MemberResponse response = accountApiClient.getMember();
+            model.addAttribute("email", response.email());
+            return "account/mypage";
         }
 
         accountApiClient.modifyMember(request);

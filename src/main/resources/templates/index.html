@@ -26,17 +26,17 @@
         </tr>
         <tr th:each="project : ${projects}">
             <td>
-                <a th:href="@{/projects/{projectId}(projectId=${project.id()})}" th:text="${project.name()}">프로젝트명</a>
+                <a th:href="@{/projects/{projectId}(projectId=${project.id()})}" th:text="${project.name()}" class="text-dark">프로젝트명</a>
             </td>
             <td>
-                <a th:href="@{/projects/{projectId}/modify(projectId=${project.id})}">
+                <a th:href="@{/projects/{projectId}/modify(projectId=${project.id})}" class="btn btn-warning">
                     수정
                 </a>
             </td>
             <td>
                 <!-- form -->
                 <form th:action="@{/projects/{projectId}/delete(projectId=${project.id})}" method="post">
-                    <button type="submit">삭제</button>
+                    <button type="submit" class="btn btn-danger">삭제</button>
                 </form>
             </td>
         </tr>
@@ -44,9 +44,9 @@
 </table>
 <div>
     <form th:action="@{/projects}" th:object="${projectCreateRequest}" method="post">
-        <input type="text" th:field="*{projectName}" placeholder="New Project Name"/>
-        <button type="submit">프로젝트 생성</button>
-        <div class="text-muted mt-2" th:error="*{projectName}"></div>
+        <input type="text" th:field="*{projectName}" placeholder="New Project Name" class="w-25 rounded-3"/>
+        <button type="submit" class="btn btn-secondary">프로젝트 생성</button>
+        <div class="text-danger mt-2 " th:errors="*{projectName}"></div>
     </form>
 </div>
 </body>

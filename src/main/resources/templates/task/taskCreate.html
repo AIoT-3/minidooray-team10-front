@@ -12,22 +12,22 @@
 <div>
     <form th:action="@{/projects/{projectId}/tasks(projectId=${projectId})}" th:object="${taskCreateRequest}" method="post">
         <input type="text" th:field="*{title}" placeholder="Task Name"/>
-        <div class="text-muted mt-2" th:errors="*{title}"></div>
+        <div class="text-danger mt-2" th:errors="*{title}"></div>
 
         <div class="mt-3">
-            <textarea th:field="*{content}" style="height: 50px; width: 400px; resize: none;" maxlength="500" placeholder="Task Content"/>
+            <textarea th:field="*{content}" style="height: 50px; width: 400px; resize: none;" maxlength="500" placeholder="Task Content"></textarea>
             <div><span id="count">0</span>/500</div>
-            <div id="content" type="text-muted mt-2" th:erros="*{content}"></div>
+            <div id="content" class="text-danger mt-2" th:errors="*{content}"></div>
         </div>
 
-        <div th:if="${#lists.isEmpty(tags) || #lists.isEmpty(milestones)}">
+        <div class="mt-3" th:if="${#lists.isEmpty(tags) || #lists.isEmpty(milestones)}">
             <a class="btn btn-danger" th:href="@{/projects/{projectId}(projectId=${projectId})}">태그/마일스톤을 먼저 등록해주세요.</a>
         </div>
         <div th:unless="${#lists.isEmpty(tags)}" th:each="tag : ${tags}" class="form-check">
             <input class="form-check-input" type="checkbox" th:field="*{tagIds}" th:value="${tag.id()}">
             <label class="form-check-label" th:text="${tag.name()}"></label>
         </div>
-        <div class="text-muted mt-2" th:errors="*{tagIds}"></div>
+        <div class="text-danger mt-2" th:errors="*{tagIds}"></div>
 
         <select th:unless="${#lists.isEmpty(milestones)}" class="form-select" name="milestoneId" required>
             <option th:each="milestone : ${milestones}" th:value="${milestone.id()}" th:text="${milestone.name()}"></option>
@@ -42,7 +42,7 @@
             <label for="deadline" class="form-label">마감일</label>
             <input type="date" class="form-control" id="deadline" name="deadline">
         </div>
-        <button type="submit">생성</button>
+        <button type="submit" class="btn btn-dark">생성</button>
     </form>
 </div>
 
