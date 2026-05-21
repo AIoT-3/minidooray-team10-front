@@ -23,6 +23,9 @@
             <input type="text" placeholder="이메일을 입력해주세요" name="email" required>
             <button type="submit">멤버 추가</button>
         </form>
+        <div th:if="${errorMsg != null}" class="text-danger mt-2">
+            <p th:text="${errorMsg}"></p>
+        </div>
     </div>
 
     <div th:unless="${adminUserId} == ${loginUserId}">

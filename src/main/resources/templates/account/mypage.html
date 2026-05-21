@@ -16,14 +16,14 @@
         <div class="row input-group-newsletter mt-3">
             <div class="col">
                 <input class="form-control" type="password" th:field="*{password}" placeholder="new password"/>
-                <div class="text-muted mt-2" th:error="*{password}"></div>
+                <div class="text-muted mt-2" th:errors="*{password}"></div>
             </div>
         </div>
 
         <div class="row input-group-newsletter  mt-3">
             <div class="col">
                 <input class="form-control" th:field="*{name}" placeholder="Name"/>
-                <div class="text-muted mt-2" th:error="*{name}"></div>
+                <div class="text-muted mt-2" th:errors="*{name}"></div>
             </div>
         </div>
 

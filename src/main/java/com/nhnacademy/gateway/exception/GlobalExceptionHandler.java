@@ -1,6 +1,5 @@
-package com.nhnacademy.gateway.exception.handler;
+package com.nhnacademy.gateway.exception;
 
-import com.nhnacademy.gateway.exception.ApiException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

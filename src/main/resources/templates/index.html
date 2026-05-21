@@ -46,7 +46,7 @@
     <form th:action="@{/projects}" th:object="${projectCreateRequest}" method="post">
         <input type="text" th:field="*{projectName}" placeholder="New Project Name"/>
         <button type="submit">프로젝트 생성</button>
-        <div class="text-muted mt-2" th:error="*{projectName}"></div>
+        <div class="text-muted mt-2" th:errors="*{projectName}"></div>
     </form>
 </div>
 </body>
