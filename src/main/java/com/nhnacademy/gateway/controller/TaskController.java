@@ -79,6 +79,8 @@ public class TaskController {
     public String taskModifyForm(@PathVariable("project-id") Long projectId,
                                  @PathVariable("task-id") Long taskId,
                                  Model model) {
+        TaskDetailResponse response = taskApiClient.getTaskDetail(projectId, taskId);
+        model.addAttribute("taskModifyRequest", new TaskModifyRequest(response));
 
         taskModifyLoad(projectId, taskId, model);
         return "task/taskModify";
@@ -118,7 +120,6 @@ public class TaskController {
     }
 
     private void taskModifyLoad(long projectId, long taskId, Model model) {
-        TaskDetailResponse response = taskApiClient.getTaskDetail(projectId, taskId);
         List<MilestoneResponse> milestones = milestoneApiClient.getMilestoneListByProjectId(projectId);
         List<TagResponse> tags = tagApiClient.getTagListByProjectId(projectId);
 
@@ -127,7 +128,5 @@ public class TaskController {
         model.addAttribute("taskStatus", TaskStatus.values());
         model.addAttribute("milestones", milestones);
         model.addAttribute("tags", tags);
-
-        model.addAttribute("taskModifyRequest", new TaskModifyRequest(response));
     }
 }

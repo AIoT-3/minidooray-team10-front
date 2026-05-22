@@ -6,6 +6,7 @@ import com.nhnacademy.gateway.dto.tag.TagResponse;
 import com.nhnacademy.gateway.validation.NotBlankGroup;
 import com.nhnacademy.gateway.validation.PatternGroup;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -32,7 +33,7 @@ public class TaskModifyRequest {
     @NotNull(message = "마일스톤을 선택해주세요", groups = NotBlankGroup.class)
     Long milestoneId;
 
-    @NotNull(message = "태그를 최소 1개 선택해주세요.", groups = NotBlankGroup.class)
+    @NotEmpty(message = "태그를 최소 1개 선택해주세요.", groups = NotBlankGroup.class)
     List<Long> tagIds;
 
     @NotNull(message = "시작일을 선택해주세요.", groups = NotBlankGroup.class)
