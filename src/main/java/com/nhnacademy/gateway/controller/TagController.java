@@ -3,6 +3,7 @@ package com.nhnacademy.gateway.controller;
 import com.nhnacademy.gateway.api.TagApiClient;
 import com.nhnacademy.gateway.auth.AuthUser;
 import com.nhnacademy.gateway.dto.enums.ProjectStatus;
+import com.nhnacademy.gateway.dto.project.ProjectModifyRequest;
 import com.nhnacademy.gateway.dto.tag.TagDeleteRequest;
 import com.nhnacademy.gateway.dto.tag.TagCreateRequest;
 import com.nhnacademy.gateway.service.PageLoadService;
@@ -60,19 +61,17 @@ public class TagController {
         return "redirect:/projects/" + projectId + "/modify";
     }
 
-// task-tag : deactivate
-
     private void projectModifyLoad(long projectId, Authentication authentication, Model model) {
         ProjectModifySetting setting = pageLoadService.loadProjectModify(projectId);
-        Long adminUserId = setting.adminUserId();
         Long userId = ((AuthUser) authentication.getPrincipal()).getId();
 
-        model.addAttribute("members", setting.memberListResponse().data());
-        model.addAttribute("project", setting.projectResponse());
+        model.addAttribute("setting", setting);
         model.addAttribute("projectStatus", ProjectStatus.values());
-        model.addAttribute("tags", setting.tagResponses());
-        model.addAttribute("milestones", setting.milestoneResponses());
-        model.addAttribute("adminUserId", adminUserId);
         model.addAttribute("loginUserId", userId);
+
+        ProjectModifyRequest modifyRequest = new ProjectModifyRequest();
+        modifyRequest.setProjectName(setting.projectResponse().name());
+        modifyRequest.setStatus(setting.projectResponse().status());
+        model.addAttribute("projectModifyRequest", modifyRequest);
     }
 }

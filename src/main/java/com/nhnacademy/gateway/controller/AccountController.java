@@ -1,6 +1,8 @@
 package com.nhnacademy.gateway.controller;
 
 import com.nhnacademy.gateway.api.AccountApiClient;
+import com.nhnacademy.gateway.api.ProjectApiClient;
+import com.nhnacademy.gateway.api.TaskApiClient;
 import com.nhnacademy.gateway.dto.account.request.MemberModifyRequest;
 import com.nhnacademy.gateway.dto.account.response.MemberResponse;
 import com.nhnacademy.gateway.validation.ValidationSequence;
@@ -21,13 +23,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AccountController {
 
     private final AccountApiClient accountApiClient;
+    private final ProjectApiClient projectApiClient;
 
     @GetMapping("/mypage")
     public String myPageForm(Model model) {
         MemberResponse response = accountApiClient.getMember();
 
-        MemberModifyRequest form = new MemberModifyRequest();
-        form.setName(response.name());
+        MemberModifyRequest form = new MemberModifyRequest(response.name());
 
         model.addAttribute("email", response.email());
         model.addAttribute("memberModifyRequest", form);
@@ -52,6 +54,9 @@ public class AccountController {
 
     @PostMapping("/withdraw")
     public String deleteMember(HttpServletRequest request) {
+
+        // account project 삭제
+        projectApiClient.deleteAllTaskData();
 
         accountApiClient.deleteMember(); // member 상태 변경
 

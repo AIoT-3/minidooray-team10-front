@@ -1,8 +1,16 @@
 package com.nhnacademy.gateway.dto.enums;
 
-// TODO-R 사용자에게 출력은 다르게
+import java.util.Arrays;
+
 public enum ProjectStatus {
     ACTIVE,
     DORMANT,
-    TERMINATE
+    TERMINATE;
+
+    public static ProjectStatus from(String str) {
+        return Arrays.stream(values())
+                .filter(s -> s.name().equalsIgnoreCase(str))
+                .findFirst()
+                .orElse(ProjectStatus.ACTIVE);
+    }
 }
