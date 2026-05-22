@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.ObjectMapper;
-
 import java.util.List;
 
 @Component
@@ -76,7 +76,7 @@ public class MilestoneApiClient {
         try {
             return objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
         } catch (Exception ex) {
-            throw e;
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "ErrorResponse Parsing 중 오류 발생");
         }
     }
 }

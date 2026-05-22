@@ -6,6 +6,7 @@ import com.nhnacademy.gateway.dto.enums.ProjectStatus;
 import com.nhnacademy.gateway.dto.milestone.MilestoneCreateRequest;
 import com.nhnacademy.gateway.dto.milestone.MilestoneDeleteRequest;
 import com.nhnacademy.gateway.dto.project.ProjectModifyRequest;
+import com.nhnacademy.gateway.exception.task.already.MilestoneAlreadyExistException;
 import com.nhnacademy.gateway.service.PageLoadService;
 import com.nhnacademy.gateway.service.setting.ProjectModifySetting;
 import com.nhnacademy.gateway.validation.ValidationSequence;
@@ -39,7 +40,13 @@ public class MilestoneController {
             return "project/projectModify";
         }
 
-        milestoneApiClient.createMilestoneToProject(projectId, request);
+        try{
+            milestoneApiClient.createMilestoneToProject(projectId, request);
+        }catch (MilestoneAlreadyExistException e) {
+            projectModifyLoad(projectId, authentication, model);
+            model.addAttribute("milestoneError", e.getMessage());
+            return "project/projectModify";
+        }
 
         return "redirect:/projects/" + projectId + "/modify"; // TODO-S redirect vs view 정리하기
     }
