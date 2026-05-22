@@ -11,12 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.View;
 import tools.jackson.databind.ObjectMapper;
-
 import java.util.List;
 
 @Component
@@ -24,7 +23,6 @@ import java.util.List;
 public class CommentApiClient {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final View error;
 
     @Value("${api.task.url}")
     private String taskApiUrl;
@@ -105,11 +103,12 @@ public class CommentApiClient {
         }
     }
 
+    // TODO-Q 코드 중복 줄이는 방법
     private ErrorResponse parse(HttpClientErrorException e) {
         try {
             return objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
         } catch (Exception ex) {
-            throw e;
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "ErrorResponse Parsing 중 오류 발생");
         }
     }
 }

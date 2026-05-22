@@ -9,6 +9,9 @@ import com.nhnacademy.gateway.dto.milestone.MilestoneResponse;
 import com.nhnacademy.gateway.dto.project.*;
 import com.nhnacademy.gateway.dto.task.TaskResponse;
 import com.nhnacademy.gateway.exception.account.MemberInviteFailedException;
+import com.nhnacademy.gateway.exception.task.already.MemberAlreadyExistException;
+import com.nhnacademy.gateway.exception.task.already.ProjectAlreadyExistException;
+import com.nhnacademy.gateway.exception.task.auth.UnauthorizedAccessException;
 import com.nhnacademy.gateway.service.PageLoadService;
 import com.nhnacademy.gateway.service.setting.ProjectModifySetting;
 import com.nhnacademy.gateway.validation.ValidationSequence;
@@ -41,15 +44,17 @@ public class ProjectController {
                                 Model model) {
 
         if(bindingResult.hasErrors()) {
-            String name = accountApiClient.getMemberName().name();
-            PageResponse<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId(ProjectStatus.ACTIVE, 0, 10);
-
-            model.addAttribute("name", name);
-            model.addAttribute("projects", projectResponses);
+            indexLoad(model);
             return "index";
         }
 
-        projectApiClient.createProjectByName(request);
+        try {
+            projectApiClient.createProjectByName(request);
+        }catch (ProjectAlreadyExistException e) {
+            indexLoad(model);
+            model.addAttribute("errorMsg", e.getMessage());
+            return "index";
+        }
 
         return "redirect:/";
     }
@@ -110,21 +115,29 @@ public class ProjectController {
         MemberIdResponse memberIdResponse;
         try {
             memberIdResponse = accountApiClient.getMemberIdByEmail(request); // 추가 가능한 멤버인지 확인
-        }catch (MemberInviteFailedException e) {
+            projectApiClient.addProjectMember(projectId, ProjectAddMemberRequest.from(memberIdResponse)); // 실제 추가
+        }catch (MemberInviteFailedException | MemberAlreadyExistException e) {
             projectModifyLoad(projectId, authentication, model);
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("memberError", e.getMessage());
             return "project/projectModify";
         }
 
-        projectApiClient.addProjectMember(projectId, ProjectAddMemberRequest.from(memberIdResponse)); // 실제 추가
 
         return "redirect:/projects/" + projectId + "/modify";
     }
 
     @PostMapping("/{project-id}/members/delete")
     public String memberDeleteProject(@PathVariable("project-id") Long projectId,
-                                      @ModelAttribute ProjectDeleteMembersRequest request) {
-        projectApiClient.deleteProjectMember(projectId, request);
+                                      @ModelAttribute ProjectDeleteMembersRequest request,
+                                      Authentication authentication,
+                                      Model model) {
+        try {
+            projectApiClient.deleteProjectMember(projectId, request);
+        }catch (UnauthorizedAccessException e) {
+            projectModifyLoad(projectId, authentication, model);
+            model.addAttribute("memberError", e.getMessage());
+            return "project/projectModify";
+        }
 
         return "redirect:/projects/" + projectId + "/modify";
     }
@@ -141,6 +154,14 @@ public class ProjectController {
         modifyRequest.setProjectName(setting.projectResponse().name());
         modifyRequest.setStatus(setting.projectResponse().status());
         model.addAttribute("projectModifyRequest", modifyRequest);
+    }
+
+    private void indexLoad(Model model) {
+        String name = accountApiClient.getMemberName().name();
+        PageResponse<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId(ProjectStatus.ACTIVE, 0, 10);
+
+        model.addAttribute("name", name);
+        model.addAttribute("projects", projectResponses);
     }
 
 }

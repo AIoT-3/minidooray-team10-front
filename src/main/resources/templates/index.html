@@ -73,6 +73,7 @@
             <button type="submit" class="btn btn-primary w-25">생성</button>
             <div class="text-danger mt-2" th:errors="*{projectName}"></div>
         </form>
+        <div class="mt-2 text-danger error-box" th:text="${errorMsg}"></div>
     </div>
 
 </div>

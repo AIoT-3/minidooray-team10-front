@@ -17,6 +17,7 @@ import com.nhnacademy.gateway.exception.account.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -183,7 +184,7 @@ public class AccountApiClient {
         try {
             return objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
         } catch (Exception ex) {
-            throw e;
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "ErrorResponse Parsing 중 오류 발생");
         }
     }
 }
