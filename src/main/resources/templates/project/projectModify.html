@@ -33,18 +33,17 @@
 
                                     </div>
                                 </form>
+                                <form class="mt-2" th:action="@{/projects/{projectId}/members(projectId=${setting.projectResponse().id()})}" method="post">
+                                    <div class="input-group">
+                                        <input class="form-control" type="email" name="email" placeholder="이메일 입력" required>
+                                        <button class="btn btn-primary btn-sm" type="submit">멤버 추가</button>
+                                    </div>
+                                </form>
                             </div>
                             <div th:unless="${setting.adminUserId()} == ${loginUserId}">
                                 <div th:each="member : ${setting.memberListResponse().data()}" th:text="${member.name()}"></div>
                             </div>
                         </div>
-
-                        <form class="mt-2" th:action="@{/projects/{projectId}/members(projectId=${setting.projectResponse().id()})}" method="post">
-                            <div class="input-group">
-                                <input class="form-control" type="email" name="email" placeholder="이메일 입력" required>
-                                <button class="btn btn-primary btn-sm" type="submit">멤버 추가</button>
-                            </div>
-                        </form>
 
                         <div class="mt-2 text-danger" th:text="${errorMsg}"></div>
                     </div>
