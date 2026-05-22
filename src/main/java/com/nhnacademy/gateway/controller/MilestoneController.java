@@ -5,6 +5,7 @@ import com.nhnacademy.gateway.auth.AuthUser;
 import com.nhnacademy.gateway.dto.enums.ProjectStatus;
 import com.nhnacademy.gateway.dto.milestone.MilestoneCreateRequest;
 import com.nhnacademy.gateway.dto.milestone.MilestoneDeleteRequest;
+import com.nhnacademy.gateway.dto.project.ProjectModifyRequest;
 import com.nhnacademy.gateway.service.PageLoadService;
 import com.nhnacademy.gateway.service.setting.ProjectModifySetting;
 import com.nhnacademy.gateway.validation.ValidationSequence;
@@ -67,5 +68,10 @@ public class MilestoneController {
         model.addAttribute("setting", setting);
         model.addAttribute("projectStatus", ProjectStatus.values());
         model.addAttribute("loginUserId", userId);
+
+        ProjectModifyRequest modifyRequest = new ProjectModifyRequest();
+        modifyRequest.setProjectName(setting.projectResponse().name());
+        modifyRequest.setStatus(setting.projectResponse().status());
+        model.addAttribute("projectModifyRequest", modifyRequest);
     }
 }

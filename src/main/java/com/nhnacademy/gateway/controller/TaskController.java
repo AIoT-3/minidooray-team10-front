@@ -80,17 +80,7 @@ public class TaskController {
                                  @PathVariable("task-id") Long taskId,
                                  Model model) {
 
-        TaskDetailResponse response = taskApiClient.getTaskDetail(projectId, taskId);
-        List<MilestoneResponse> milestones = milestoneApiClient.getMilestoneListByProjectId(projectId);
-        List<TagResponse> tags = tagApiClient.getTagListByProjectId(projectId);
-
-        model.addAttribute("projectId", projectId);
-        model.addAttribute("taskId", taskId);
-        model.addAttribute("taskStatus", TaskStatus.values());
-        model.addAttribute("milestones", milestones);
-        model.addAttribute("tags", tags);
-
-        model.addAttribute("taskModifyRequest", new TaskModifyRequest(response));
+        taskModifyLoad(projectId, taskId, model);
         return "task/taskModify";
     }
 
@@ -98,9 +88,11 @@ public class TaskController {
     public String taskModify(@PathVariable("project-id") Long projectId,
                              @PathVariable("task-id") Long taskId,
                              @Validated(ValidationSequence.class) @ModelAttribute TaskModifyRequest request,
-                             BindingResult bindingResult) {
+                             BindingResult bindingResult,
+                             Model model) {
 
         if(bindingResult.hasErrors()) {
+            taskModifyLoad(projectId, taskId, model);
             return "task/taskModify";
         }
         taskApiClient.modifyTask(projectId, taskId, request);
@@ -125,4 +117,17 @@ public class TaskController {
         model.addAttribute("milestones", milestoneResponses);
     }
 
+    private void taskModifyLoad(long projectId, long taskId, Model model) {
+        TaskDetailResponse response = taskApiClient.getTaskDetail(projectId, taskId);
+        List<MilestoneResponse> milestones = milestoneApiClient.getMilestoneListByProjectId(projectId);
+        List<TagResponse> tags = tagApiClient.getTagListByProjectId(projectId);
+
+        model.addAttribute("projectId", projectId);
+        model.addAttribute("taskId", taskId);
+        model.addAttribute("taskStatus", TaskStatus.values());
+        model.addAttribute("milestones", milestones);
+        model.addAttribute("tags", tags);
+
+        model.addAttribute("taskModifyRequest", new TaskModifyRequest(response));
+    }
 }

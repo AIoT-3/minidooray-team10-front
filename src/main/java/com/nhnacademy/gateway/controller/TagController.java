@@ -3,6 +3,7 @@ package com.nhnacademy.gateway.controller;
 import com.nhnacademy.gateway.api.TagApiClient;
 import com.nhnacademy.gateway.auth.AuthUser;
 import com.nhnacademy.gateway.dto.enums.ProjectStatus;
+import com.nhnacademy.gateway.dto.project.ProjectModifyRequest;
 import com.nhnacademy.gateway.dto.tag.TagDeleteRequest;
 import com.nhnacademy.gateway.dto.tag.TagCreateRequest;
 import com.nhnacademy.gateway.service.PageLoadService;
@@ -67,5 +68,10 @@ public class TagController {
         model.addAttribute("setting", setting);
         model.addAttribute("projectStatus", ProjectStatus.values());
         model.addAttribute("loginUserId", userId);
+
+        ProjectModifyRequest modifyRequest = new ProjectModifyRequest();
+        modifyRequest.setProjectName(setting.projectResponse().name());
+        modifyRequest.setStatus(setting.projectResponse().status());
+        model.addAttribute("projectModifyRequest", modifyRequest);
     }
 }

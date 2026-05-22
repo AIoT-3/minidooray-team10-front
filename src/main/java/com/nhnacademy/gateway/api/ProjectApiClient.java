@@ -175,6 +175,17 @@ public class ProjectApiClient {
         }
     }
 
+    /**
+     * 회원 삭제 시 task.api 데이터 전체 삭제
+     */
+    public void deleteAllTaskData() {
+        restTemplate.postForEntity(
+                taskApiUrl + "/members/me/cleanup",
+                null,
+                Void.class
+        );
+    }
+
     private ErrorResponse parse(HttpClientErrorException e) {
         try {
             return objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);

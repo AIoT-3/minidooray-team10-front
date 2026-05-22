@@ -71,14 +71,12 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">시작일</label>
-
-                                <input type="date" class="form-control" name="startDate">
+                                <input type="date" class="form-control" id="startDate" name="startDate">
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">마감일</label>
-
-                                <input type="date" class="form-control" name="deadline">
+                                <input type="date" class="form-control" id="deadline" name="deadline">
                             </div>
 
                         </div>
@@ -94,16 +92,36 @@
     </div>
 
 </div>
-
 <script>
     const textarea = document.getElementById('taskContent');
     const count = document.getElementById('count');
+
+    const startDate = document.getElementById('startDate');
+    const deadline = document.getElementById('deadline');
 
     function updateCount() {
         count.textContent = textarea.value.length;
     }
 
+    function validateDates() {
+        if (startDate.value) {
+            deadline.min = startDate.value;
+        }
+
+        if (deadline.value) {
+            startDate.max = deadline.value;
+        }
+
+        if (startDate.value && deadline.value && startDate.value > deadline.value) {
+            alert('시작일은 마감일보다 늦을 수 없습니다.');
+            deadline.value = '';
+        }
+    }
+
     textarea.addEventListener('input', updateCount);
+    startDate.addEventListener('change', validateDates);
+    deadline.addEventListener('change', validateDates);
+
     updateCount();
 </script>
 
