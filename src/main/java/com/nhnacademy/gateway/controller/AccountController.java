@@ -26,8 +26,7 @@ public class AccountController {
     public String myPageForm(Model model) {
         MemberResponse response = accountApiClient.getMember();
 
-        MemberModifyRequest form = new MemberModifyRequest();
-        form.setName(response.name());
+        MemberModifyRequest form = new MemberModifyRequest(response.name());
 
         model.addAttribute("email", response.email());
         model.addAttribute("memberModifyRequest", form);

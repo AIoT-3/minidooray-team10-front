@@ -23,4 +23,7 @@ public class MemberModifyRequest {
     @Length(max = 20, message = "최대 20자", groups = PatternGroup.class)
     private String name;
 
+    public MemberModifyRequest(String name) {
+        this.name = name;
+    }
 }

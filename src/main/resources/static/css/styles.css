@@ -10835,7 +10835,6 @@ body {
 }
 body:before {
   content: "";
-  position: fixed;
   top: 0;
   left: 0;
   height: 100%;

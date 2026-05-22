@@ -3,49 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <title>Task 수정</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-    <h1>Task 수정</h1>
-    <form th:action="@{/projects/{projectId}/tasks/{taskId}(projectId=${projectId}, taskId=${taskId})}" th:object="${taskModifyRequest}" method="post">
-        <div>
-            <input type="text" th:field="*{title}" placeholder="Task 이름"/>
-            <div class="text-muted mt-1" th:errors="*{title}"></div>
-        </div>
 
-        <div class="mt-2">
-            <select class="form-select" th:field="*{status}" required>
-                <option th:each="status : ${taskStatus}" th:value="${status.name}" th:text="${status.name}" ></option>
-            </select>
+<div th:replace="~{fragment/header :: header}"></div>
 
-            <div th:each="tag : ${tags}" class="form-check">
-                <input class="form-check-input" type="checkbox" th:field="*{tagIds}" th:value="${tag.id()}">
-                <label class="form-check-label" th:text="${tag.name()}"></label>
+<div class="container py-5">
+    <h2 class="text-center mb-5">Task 수정</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header fw-bold">Task Modify</div>
+
+                <div class="card-body">
+                    <form th:action="@{/projects/{projectId}/tasks/{taskId}/modify(projectId=${projectId}, taskId=${taskId})}" th:object="${taskModifyRequest}" method="post">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">이름</label>
+                            <input class="form-control" type="text" th:field="*{title}" placeholder="Task Name"/>
+                            <div class="text-danger mt-2" th:errors="*{title}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">상태</label>
+                            <select class="form-select" th:field="*{status}" required>
+                                <option th:each="status : ${taskStatus}" th:value="${status.name}" th:text="${status.name}" ></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Tag</label>
+                            <div th:each="tag : ${tags}" class="form-check">
+                                <input class="form-check-input" type="checkbox" th:field="*{tagIds}" th:value="${tag.id()}">
+                                <label class="form-check-label" th:text="${tag.name()}"></label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Milestone</label>
+                            <select class="form-select" th:field="*{milestoneId}" required>
+                                <option th:each="milestone : ${milestones}" th:value="${milestone.id()}" th:text="${milestone.name()}" ></option>
+                            </select>
+                        </div>
+
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Content</label>
+                            <div></div>
+                            <textarea id="taskContent" class="rounded-3 p-3" style="resize: none; width: 100%; height: 250px" th:field="*{content}" placeholder="Task 내용" maxlength="500"></textarea>
+
+                            <div class="text-end mt-1">
+                                <span id="count">0</span>/500
+                            </div>
+
+                            <div class="text-danger mt-2" th:errors="*{content}"></div>
+                        </div>
+
+
+                        <div class="mb-2">
+                            <label for="startDate" class="form-label fw-semibold">생성일</label>
+                            <input id="startDate" type="date" class="form-control" th:field="*{startDate}">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="deadline" class="form-label fw-semibold">마감일</label>
+                            <input id = "deadline" type="date" class="form-control" th:field="*{deadline}">
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-3">
+                            <button type="submit" class="btn btn-primary px-5">수정</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <select class="form-select" th:field="*{milestoneId}" required>
-                <option th:each="milestone : ${milestones}" th:value="${milestone.id()}" th:text="${milestone.name()}" ></option>
-            </select>
         </div>
+    </div>
+</div>
+<script>
+    const textarea = document.getElementById('taskContent');
+    const count = document.getElementById('count');
 
+    function updateCount() {
+        count.textContent = textarea.value.length;
+    }
 
-        <div class="mt-2">
-            <textarea th:field="*{content}" placeholder="Task 내용"></textarea>
-            <div class="text-muted mt-1" th:errors="*{content}"></div>
-        </div>
-
-
-        <div class="mt-2">
-            <label for="startDate" class="form-label">생성일</label>
-            <input id="startDate" type="date" class="form-control" th:field="*{startDate}">
-        </div>
-
-        <div class="mt-2">
-            <label for="deadline" class="form-label">마감일</label>
-            <input id = "deadline" type="date" class="form-control" th:field="*{deadline}">
-        </div>
-
-        <button type="submit">수정</button>
-    </form>
+    textarea.addEventListener('input', updateCount);
+    updateCount();
+</script>
 </body>
 </html>
