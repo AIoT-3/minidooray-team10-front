@@ -23,9 +23,11 @@ public class HomeController {
 
     @GetMapping
     public String home(@RequestParam(name = "status", defaultValue = "active") ProjectStatus status,
+                       @RequestParam(name = "page", defaultValue = "0") int page,
+                       @RequestParam(name = "size", defaultValue = "10") int size,
                        Model model) {
 
-        PageResponse<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId(status);
+        PageResponse<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId(status, page, size);
 
         model.addAttribute("name", accountApiClient.getMemberName().name());
         model.addAttribute("projects", projectResponses);

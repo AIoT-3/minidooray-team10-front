@@ -33,9 +33,12 @@ public class ProjectApiClient {
     /**
      * 프로젝트 리스트 조회 (memberId)
      */
-    public PageResponse<ProjectResponse> getProjectsByMemberId(ProjectStatus status) {
+    public PageResponse<ProjectResponse> getProjectsByMemberId(ProjectStatus status, int page, int size) {
         return restTemplate.exchange(
-                taskApiUrl + "?status=" + status.name(),
+                taskApiUrl
+                        + "?status=" + status.name().toLowerCase()
+                        + "&page=" + page
+                        + "&size=" + size,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<PageResponse<ProjectResponse>>(){}

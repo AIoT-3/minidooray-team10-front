@@ -45,12 +45,12 @@
 
         <tr th:each="project : ${projects.content}">
             <td>
-                <a th:href="@{/projects/{projectId}(projectId=${project.id()})}" th:text="${project.name()}" class="text-dark text-decoration-none fw-semiboldw-semibold">
+                <a th:href="@{/projects/{projectId}(projectId=${project.id()})}" th:text="${project.name()}" class="text-dark text-decoration-none fw-semibold">
                 </a>
             </td>
 
             <td>
-                <a th:href="@{/projects/{projectId}/modify(projectId=${project.id()})}" class="btn btn-warning btn-sm w-100">
+                <a th:href="@{/projects/{projectId}/modify(projectId=${project.id()})}" class="btn btn-outline-warning btn-sm w-100">
                     수정
                 </a>
             </td>
@@ -68,7 +68,7 @@
 
     <div class="card shadow-sm p-3 mt-4">
         <form th:action="@{/projects}" th:object="${projectCreateRequest}" method="post" class="d-flex gap-2">
-            <input type="text" th:field="*{projectName}" placeholder="New Project Name" class="form-control w-75"/>
+            <input type="text" th:field="*{projectName}" placeholder="New Project Name" class="form-control w-75" required/>
 
             <button type="submit" class="btn btn-primary w-25">생성</button>
             <div class="text-danger mt-2" th:errors="*{projectName}"></div>
@@ -76,60 +76,63 @@
     </div>
 
 </div>
+<div th:if="${!projects.isEmpty()}">
+    <nav aria-label="Page navigation"
+         th:with="
+            pageNumber=${projects.number},
+            totalPages=${projects.totalPages},
+            pageBlock=5,
+            startPage=${(pageNumber / pageBlock) * pageBlock + 1},
+            endPage=${(startPage + pageBlock - 1) > totalPages ? totalPages : (startPage + pageBlock - 1)}
+         ">
 
-</body>
+        <ul class="pagination justify-content-center">
 
-<!-- 페이징 -->
-<!--<div th:if="${!projects.isEmpty()}">-->
-<!--        <nav-->
-<!--                th:with="-->
-<!--                    pageNumber = ${projects.number()},-->
-<!--                    pageSize = ${projects.size()},-->
-<!--                    totalPages = ${projects.totalPages},-->
-<!--                    startPage = ${T(Math).floor(pageNumber / pageSize) * pageSize + 1},-->
-<!--                    tempEndPage = ${startPage + pageSize - 1},-->
-<!--                    endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})"-->
-<!--                aria-label="Page navigation"-->
-<!--        >-->
-<!--        <ul class="pagination ">-->
-<!--            &lt;!&ndash; 처음으로 이동 &ndash;&gt;-->
-<!--            <li th:classappend="${pageNumber < pageSize} ? 'disabled'" class="page-item">-->
-<!--                <a class="page-link" th:href="@{/(page=0)}">-->
-<!--                    <span>&laquo;</span>-->
-<!--                    <span class="sr-only">First</span>-->
-<!--                </a>-->
-<!--            </li>-->
+            <!-- 처음 -->
+            <li class="page-item" th:classappend="${projects.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(page=0,size=${projects.size},status=${status})}">
+                    &laquo;
+                </a>
+            </li>
 
-<!--            &lt;!&ndash; 이전으로 이동 &ndash;&gt;-->
-<!--            <li th:classappend="${projects.first} ? 'disabled'" class="page-item">-->
-<!--                <a class="page-link" th:href="${projects.first} ? '#' : @{/(page=${pageNumber - 1})}" aria-label="Previous">-->
-<!--                    <span aria-hidden="true">&lt;</span>-->
-<!--                    <span class="sr-only">Previous</span>-->
-<!--                </a>-->
-<!--            </li>-->
+            <!-- 이전 -->
+            <li class="page-item" th:classappend="${projects.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(page=${pageNumber-1},size=${projects.size},status=${status})}">
+                    &lt;
+                </a>
+            </li>
 
-<!--            &lt;!&ndash; 특정 페이지로 이동 &ndash;&gt;-->
-<!--            <li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">-->
-<!--                <a th:text="${page}" class="page-link" th:href="@{/(page=${page - 1})}"></a>-->
-<!--            </li>-->
+            <!-- 페이지 번호 -->
+            <li class="page-item"
+                th:each="page : ${#numbers.sequence(startPage,endPage)}"
+                th:classappend="${page == pageNumber + 1} ? 'active'">
 
-<!--            &lt;!&ndash; 다음으로 이동 &ndash;&gt;-->
-<!--            <li th:classappend="${projects.last} ? 'disabled'" class="page-item">-->
-<!--                <a class="page-link" th:href="${projects.last} ? '#' : @{/(page=${pageNumber + 1})}" aria-label="Next">-->
-<!--                    <span aria-hidden="true">&gt;</span>-->
-<!--                    <span class="sr-only">Next</span>-->
-<!--                </a>-->
-<!--            </li>-->
+                <a class="page-link"
+                   th:text="${page}"
+                   th:href="@{/(page=${page-1},size=${projects.size},status=${status})}">
+                </a>
+            </li>
 
-<!--            &lt;!&ndash; 마지막으로 이동 &ndash;&gt;-->
-<!--            <li th:classappend=" ${T(Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'" class="page-item">-->
-<!--                <a class="page-link" th:href="@{/(page=${totalPages - 1})}">-->
-<!--                    <span>&raquo;</span>-->
-<!--                    <span class="sr-only">Last</span>-->
-<!--                </a>-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </nav>-->
-<!--</div>-->
+            <!-- 다음 -->
+            <li class="page-item" th:classappend="${projects.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(page=${pageNumber+1},size=${projects.size},status=${status})}">
+                    &gt;
+                </a>
+            </li>
+
+            <!-- 마지막 -->
+            <li class="page-item" th:classappend="${projects.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(page=${totalPages-1},size=${projects.size},status=${status})}">
+                    &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</div>
 </body>
 </html>

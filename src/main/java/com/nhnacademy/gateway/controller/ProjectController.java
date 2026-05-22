@@ -42,7 +42,7 @@ public class ProjectController {
 
         if(bindingResult.hasErrors()) {
             String name = accountApiClient.getMemberName().name();
-            PageResponse<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId(ProjectStatus.ACTIVE);
+            PageResponse<ProjectResponse> projectResponses = projectApiClient.getProjectsByMemberId(ProjectStatus.ACTIVE, 0, 10);
 
             model.addAttribute("name", name);
             model.addAttribute("projects", projectResponses);
@@ -131,16 +131,10 @@ public class ProjectController {
 
     private void projectModifyLoad(long projectId, Authentication authentication, Model model) {
         ProjectModifySetting setting = pageLoadService.loadProjectModify(projectId);
-        Long adminUserId = setting.adminUserId();
         Long userId = ((AuthUser) authentication.getPrincipal()).getId();
 
-        model.addAttribute("members", setting.memberListResponse().data());
-        model.addAttribute("project", setting.projectResponse());
-        model.addAttribute("tags", setting.tagResponses());
-        model.addAttribute("milestones", setting.milestoneResponses());
-//        model.addAttribute("setting", setting); TODO 이 방법으로 수정
+        model.addAttribute("setting", setting);
         model.addAttribute("projectStatus", ProjectStatus.values());
-        model.addAttribute("adminUserId", adminUserId);
         model.addAttribute("loginUserId", userId);
 
         ProjectModifyRequest modifyRequest = new ProjectModifyRequest();

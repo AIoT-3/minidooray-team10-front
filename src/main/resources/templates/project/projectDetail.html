@@ -10,14 +10,17 @@
 <div th:replace="~{fragment/header :: header}"></div>
 
 <div class="container py-5">
-
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h2 th:text="${project.name()}"></h2>
 
-        <a class="btn btn-primary"
+        <a class="btn btn-outline-primary"
            th:href="@{/projects/{projectId}/tasks(projectId=${project.id()})}">
             Task 생성
         </a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(tasks)}">
+        <h2 class="text-muted">등록된 Task가 없습니다.</h2>
     </div>
 
     <div th:each="milestone : ${milestones}"
